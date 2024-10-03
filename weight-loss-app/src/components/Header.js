@@ -7,8 +7,7 @@ const Header = () => (
             <h1 className="logo">Weight Loss App</h1>
             <nav className="nav">
                 <ul className="nav-list">
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#features">Features</a></li>
+                    <li><a href="#info">Info</a></li>
                 </ul>
             </nav>
         </div>

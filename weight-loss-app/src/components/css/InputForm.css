@@ -5,7 +5,12 @@
 }
 
 body {
-    margin-left: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.ui input{
+    margin-bottom: 1em;
 }
 
 form input,
@@ -27,8 +32,4 @@ form button {
 
 .height-select select {
     flex: 1;
-}
-
-form button {
-    width: auto; 
 }

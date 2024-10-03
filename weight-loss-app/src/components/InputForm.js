@@ -67,7 +67,7 @@ function InputForm({ setResults }) {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} class="ui form">
             <div>
                 <input type="number" 
                 name="age" 
@@ -91,18 +91,20 @@ function InputForm({ setResults }) {
                 </select>
             </div>
 
-            <div>
+            <div class="ui right labeled input">
                 <input type="number" 
                 name="weight" 
-                placeholder='Weight (lb)' 
+                placeholder='Weight' 
                 value={formData.weight} 
                 onChange={handleChange} 
                 required 
                 />
+                <div class="ui basic label">
+                    lb
+                </div>
             </div>
 
             <div className="form-group">
-                <label htmlFor="heightFeet">Height:</label>
                 <div className="height-select">
                     
                     <select
@@ -203,7 +205,7 @@ function InputForm({ setResults }) {
             )}
 
             <div>
-                <button type="submit">Get Suggestions</button>
+                <button class="ui button">Get Suggestions</button>
             </div>
         </form>
     )
