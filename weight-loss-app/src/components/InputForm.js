@@ -58,7 +58,10 @@ function InputForm({ setResults }) {
             body: JSON.stringify(dataToSend),
         })
             .then((res) => res.json())
-            .then((data) => setResults(data))
+            .then((data) => {
+                console.log(`Received data:`, data);
+                setResults(data);
+            })  
             .catch((err) => console.error('Error:', err));
         
     };
