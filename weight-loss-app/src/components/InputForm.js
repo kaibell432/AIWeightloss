@@ -35,14 +35,32 @@ function InputForm({ setResults }) {
             return;
         }
 
+        const totalInches = parseInt(formData.heightFeet) * 12 + parseInt(formData.heightInches);
+        const heightCm = totalInches * 2.54;
+
+        const dietaryRestrictions = formData.dietaryRestrictions === 'Other' ? formData.dietaryRestrictionsOther : formData.dietaryRestrictions;
+
+        const healthGoals = formData.healthGoalsOther === 'Other' ? formData.healthGoalsOther : formData.healthGoals;
+
+        const dataToSend = {
+            age: formData.age,
+            gender: formData.gender,
+            weight: formData.weight,
+            heightCm: heightCm,
+            activityLevel: formData.activityLevel,
+            dietaryRestrictions: dietaryRestrictions,
+            healthGoals: healthGoals,
+        };
+
         fetch('/api/getSuggestions', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json'},
-            body: JSON.stringify(formData),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dataToSend),
         })
-        .then((res) => res.json())
-        .then((data) => setResults(data))
-        .catch((err) => console.error());
+            .then((res) => res.json())
+            .then((data) => setResults(data))
+            .catch((err) => console.error('Error:', err));
+        
     };
 
     return (
@@ -73,7 +91,7 @@ function InputForm({ setResults }) {
             <div>
                 <input type="number" 
                 name="weight" 
-                placeholder='Weight' 
+                placeholder='Weight (lb)' 
                 value={formData.weight} 
                 onChange={handleChange} 
                 required 
