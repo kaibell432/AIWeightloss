@@ -113,7 +113,7 @@ function InputForm({ setResults }) {
 
   return (
     <div className="form-container">
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit}  loading={loading}>
         {/* Age Input */}
         <Form.Field
           control={Input}
@@ -244,147 +244,11 @@ function InputForm({ setResults }) {
         )}
 
         {/* Submit Button */}
-        <Button type="submit" primary loading={loading}>
+        <Button type="submit" primary>
           Get Suggestions
         </Button>
       </Form>
 
-      {/* Loading State*/}
-      {loading === setLoading && <Form onSubmit={handleSubmit} loading>
-        {/* Age Input */}
-        <Form.Field
-          control={Input}
-          type="number"
-          name="age"
-          placeholder="Age"
-          value={formData.age}
-          onChange={handleChange}
-          required
-        />
-
-        {/* Gender Dropdown */}
-        <Form.Field
-          control={Dropdown}
-          placeholder="Select Gender"
-          fluid
-          selection
-          options={genderOptions}
-          name="gender"
-          value={formData.gender}
-          onChange={handleChange}
-          required
-        />
-
-        {/* Weight Input */}
-        <Form.Field>
-          <Input
-            label={{ basic: true, content: 'lb' }}
-            labelPosition="right"
-            type="number"
-            name="weight"
-            placeholder="Weight"
-            value={formData.weight}
-            onChange={handleChange}
-            required
-          />
-        </Form.Field>
-
-        {/* Height Selection */}
-        <Form.Group widths="equal">
-          <Form.Field
-            control={Dropdown}
-            placeholder="Height (Feet)"
-            fluid
-            selection
-            options={feetOptions}
-            name="heightFeet"
-            value={formData.heightFeet}
-            onChange={handleChange}
-            required
-          />
-          <Form.Field
-            control={Dropdown}
-            placeholder="Height (Inches)"
-            fluid
-            selection
-            options={inchOptions}
-            name="heightInches"
-            value={formData.heightInches}
-            onChange={handleChange}
-            required
-          />
-        </Form.Group>
-
-        {/* Activity Level Dropdown */}
-        <Form.Field
-          control={Dropdown}
-          placeholder="Select Activity Level"
-          fluid
-          selection
-          options={activityOptions}
-          name="activityLevel"
-          value={formData.activityLevel}
-          onChange={handleChange}
-          required
-        />
-
-        {/* Dietary Restrictions Dropdown */}
-        <Form.Field
-          control={Dropdown}
-          placeholder="Select Dietary Restrictions"
-          fluid
-          selection
-          options={dietaryOptions}
-          name="dietaryRestrictions"
-          value={formData.dietaryRestrictions}
-          onChange={handleChange}
-          required
-        />
-
-        {/* Other Dietary Restrictions Input */}
-        {formData.dietaryRestrictions === 'Other' && (
-          <Form.Field
-            control={Input}
-            type="text"
-            name="dietaryRestrictionsOther"
-            placeholder="Please specify"
-            value={formData.dietaryRestrictionsOther}
-            onChange={handleChange}
-            required
-          />
-        )}
-
-        {/* Health Goals Dropdown */}
-        <Form.Field
-          control={Dropdown}
-          placeholder="Select Health Goals"
-          fluid
-          selection
-          options={healthGoalsOptions}
-          name="healthGoals"
-          value={formData.healthGoals}
-          onChange={handleChange}
-          required
-        />
-
-        {/* Other Health Goals Input */}
-        {formData.healthGoals === 'Other' && (
-          <Form.Field
-            control={Input}
-            type="text"
-            name="healthGoalsOther"
-            placeholder="Please specify"
-            value={formData.healthGoalsOther}
-            onChange={handleChange}
-            required
-          />
-        )}
-
-        {/* Submit Button */}
-        <Button type="submit" primary loading={loading}>
-          Get Suggestions
-        </Button>
-      </Form>}            
     </div>
 
     
