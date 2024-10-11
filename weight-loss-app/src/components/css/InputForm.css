@@ -7,10 +7,8 @@
 
 /* Center the form on the page */
 body {
-    display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
     margin: 0;
 }
 
@@ -19,21 +17,18 @@ body {
     width: 100%;
     max-width: 600px;
     padding: 1em;
-    margin: 1em;
-    flex-shrink: 0;
+    margin: 0 auto;
+    overflow: hidden;
 }
 
 /* Form Fields */
 .ui.form .field {
     margin-bottom: 1em;
-}
-
-/* Adjust Input Fields */
-.ui.input > input {
-    /* Custom styles for input fields if needed */
+    width: 100%;
 }
 
 /* Adjust Dropdown Fields */
+.ui.input > input,
 .ui.dropdown {
     /* Custom styles for dropdowns if needed */
     width: 100%;
