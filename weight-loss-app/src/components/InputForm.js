@@ -1,191 +1,249 @@
-import React, {useState} from 'react';
-import './css/InputForm.css'
+// src/InputForm.js
+
+import React, { useState } from 'react';
+import { Form, Input, Dropdown, Button } from 'semantic-ui-react';
+import './css/InputForm.css';
 
 function InputForm({ setResults }) {
-    const [formData, setFormData] = useState({
-        age: '',
-        gender: '',
-        weight: '',
-        heightFeet: '',
-        heightInches: '',
-        activityLevel: '',
-        dietaryRestrictions: '',
-        dietaryRestrictionsOther: '',
-        healthGoals: '',
-        healthGoalsOther: '',
-    });
+  const [formData, setFormData] = useState({
+    age: '',
+    gender: '',
+    weight: '',
+    heightFeet: '',
+    heightInches: '',
+    activityLevel: '',
+    dietaryRestrictions: '',
+    dietaryRestrictionsOther: '',
+    healthGoals: '',
+    healthGoalsOther: '',
+  });
 
-    const feetOptions = Array.from({ length: 5 }, (_, i) => i + 4);
-    const inchOptions = Array.from({ length: 12}, (_, i) => i);
+  // Options for Dropdowns
+  const genderOptions = [
+    { key: 'female', text: 'Female', value: 'Female' },
+    { key: 'male', text: 'Male', value: 'Male' },
+    { key: 'other', text: 'Other', value: 'Other' },
+  ];
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
+  const feetOptions = Array.from({ length: 5 }, (_, i) => ({
+    key: i + 4,
+    text: `${i + 4} ft`,
+    value: i + 4,
+  }));
 
-        setFormData((prevFormData) => ({
-            ...prevFormData,
-            [name]: value,
-        }));
+  const inchOptions = Array.from({ length: 12 }, (_, i) => ({
+    key: i,
+    text: `${i} in`,
+    value: i,
+  }));
+
+  const activityOptions = [
+    { key: 'sedentary', text: 'Sedentary (0 Days Per Week)', value: 'Sedentary' },
+    { key: 'moderate', text: 'Moderate (1-3 Days Per Week)', value: 'Moderate' },
+    { key: 'active', text: 'Active (4+ Days Per Week)', value: 'Active' },
+    { key: 'limited', text: 'I have a condition that limits or prevents exercise.', value: 'Disability' },
+  ];
+
+  const dietaryOptions = [
+    { key: 'vegetarian', text: 'Vegetarian', value: 'Vegetarian' },
+    { key: 'vegan', text: 'Vegan', value: 'Vegan' },
+    { key: 'noRestrictions', text: 'No Restrictions', value: 'No Restrictions' },
+    { key: 'other', text: 'Other', value: 'Other' },
+  ];
+
+  const healthGoalsOptions = [
+    { key: 'loseFat', text: 'Lose Fat', value: 'Lose Fat' },
+    { key: 'buildMuscle', text: 'Build Muscle', value: 'Build Muscle' },
+    { key: 'other', text: 'Other', value: 'Other' },
+  ];
+
+  const handleChange = (e, { name, value }) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!formData.heightFeet || formData.heightInches === '') {
+      alert('Please enter your full height.');
+      return;
+    }
+
+    const totalInches = parseInt(formData.heightFeet) * 12 + parseInt(formData.heightInches);
+    const heightCm = totalInches * 2.54;
+
+    const dietaryRestrictions =
+      formData.dietaryRestrictions === 'Other' ? formData.dietaryRestrictionsOther : formData.dietaryRestrictions;
+
+    const healthGoals =
+      formData.healthGoals === 'Other' ? formData.healthGoalsOther : formData.healthGoals;
+
+    const dataToSend = {
+      age: formData.age,
+      gender: formData.gender,
+      weight: formData.weight,
+      heightCm: heightCm,
+      activityLevel: formData.activityLevel,
+      dietaryRestrictions: dietaryRestrictions,
+      healthGoals: healthGoals,
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    fetch('/api/getSuggestions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dataToSend),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(`Received data:`, data);
+        setResults(data);
+      })
+      .catch((err) => console.error('Error:', err));
+  };
 
-        if (!formData.heightFeet || formData.heightInches === '') {
-            alert('Please enter your full height.');
-            return;
-        }
+  return (
+    <div className="form-container">
+      <Form onSubmit={handleSubmit}>
+        {/* Age Input */}
+        <Form.Field
+          control={Input}
+          type="number"
+          name="age"
+          placeholder="Age"
+          value={formData.age}
+          onChange={handleChange}
+          required
+        />
 
-        fetch('/api/getSuggestions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json'},
-            body: JSON.stringify(formData),
-        })
-        .then((res) => res.json())
-        .then((data) => setResults(data))
-        .catch((err) => console.error());
-    };
+        {/* Gender Dropdown */}
+        <Form.Field
+          control={Dropdown}
+          placeholder="Select Gender"
+          fluid
+          selection
+          options={genderOptions}
+          name="gender"
+          value={formData.gender}
+          onChange={handleChange}
+          required
+        />
 
-    return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                <input type="number" 
-                name="age" 
-                placeholder='Age' 
-                value={formData.age} 
-                onChange={handleChange} 
-                required 
-                />
-            </div>
+        {/* Weight Input */}
+        <Form.Field>
+          <Input
+            label={{ basic: true, content: 'lb' }}
+            labelPosition="right"
+            type="number"
+            name="weight"
+            placeholder="Weight"
+            value={formData.weight}
+            onChange={handleChange}
+            required
+          />
+        </Form.Field>
 
-            <div>
-                <select name="gender" 
-                value={formData.gender} 
-                onChange={handleChange} 
-                required
-                >
-                    <option value="">Select Gender</option>
-                    <option value="Female">Female</option>
-                    <option value="Male">Male</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
+        {/* Height Selection */}
+        <Form.Group widths="equal">
+          <Form.Field
+            control={Dropdown}
+            placeholder="Height (Feet)"
+            fluid
+            selection
+            options={feetOptions}
+            name="heightFeet"
+            value={formData.heightFeet}
+            onChange={handleChange}
+            required
+          />
+          <Form.Field
+            control={Dropdown}
+            placeholder="Height (Inches)"
+            fluid
+            selection
+            options={inchOptions}
+            name="heightInches"
+            value={formData.heightInches}
+            onChange={handleChange}
+            required
+          />
+        </Form.Group>
 
-            <div>
-                <input type="number" 
-                name="weight" 
-                placeholder='Weight' 
-                value={formData.weight} 
-                onChange={handleChange} 
-                required 
-                />
-            </div>
+        {/* Activity Level Dropdown */}
+        <Form.Field
+          control={Dropdown}
+          placeholder="Select Activity Level"
+          fluid
+          selection
+          options={activityOptions}
+          name="activityLevel"
+          value={formData.activityLevel}
+          onChange={handleChange}
+          required
+        />
 
-            <div className="form-group">
-                <label htmlFor="heightFeet">Height:</label>
-                <div className="height-select">
-                    
-                    <select
-                        name="heightFeet"
-                        value={formData.heightFeet}
-                        onChange={handleChange}
-                        required
-                    >
-                        <option value="">Feet</option>
-                        {feetOptions.map((feet) => (
-                            <option key={feet} value={feet}>
-                                {feet} ft
-                            </option>
-                        ))}
-                    </select>
+        {/* Dietary Restrictions Dropdown */}
+        <Form.Field
+          control={Dropdown}
+          placeholder="Select Dietary Restrictions"
+          fluid
+          selection
+          options={dietaryOptions}
+          name="dietaryRestrictions"
+          value={formData.dietaryRestrictions}
+          onChange={handleChange}
+          required
+        />
 
-                    <select
-                        name="heightInches"
-                        value={formData.heightInches}
-                        onChange={handleChange}
-                        required
-                    >
-                        <option value="">Inches</option>
-                        {inchOptions.map((inch) => (
-                            <option key={inch} value={inch}>
-                                {inch} in
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            </div>
+        {/* Other Dietary Restrictions Input */}
+        {formData.dietaryRestrictions === 'Other' && (
+          <Form.Field
+            control={Input}
+            type="text"
+            name="dietaryRestrictionsOther"
+            placeholder="Please specify"
+            value={formData.dietaryRestrictionsOther}
+            onChange={handleChange}
+            required
+          />
+        )}
 
-            <div>
-                <select name="activityLevel" 
-                value={formData.activityLevel} 
-                onChange={handleChange} 
-                required
-                >
-                    <option value="">Select Activity Level</option>
-                    <option value="Sedentary">Sedentary (0 Days Per Week)</option>
-                    <option value="Moderate">Moderate (1-3 Days Per Week)</option>
-                    <option value="Active">Active (4+ Days Per Week)</option>
-                    <option value="Disability">I have a condition that limits or prevents exercise.</option> 
-                </select>    
-            </div>
+        {/* Health Goals Dropdown */}
+        <Form.Field
+          control={Dropdown}
+          placeholder="Select Health Goals"
+          fluid
+          selection
+          options={healthGoalsOptions}
+          name="healthGoals"
+          value={formData.healthGoals}
+          onChange={handleChange}
+          required
+        />
 
-            <div>
-                <select name="dietaryRestrictions" 
-                value={formData.dietaryRestrictions} 
-                onChange={handleChange} 
-                required
-                >
-                    <option value="">Select Dietary Restrictions</option>
-                    <option value="Vegetarian">Vegetarian</option>
-                    <option value="Vegan">Vegan</option>
-                    <option value="No Restrictions">No Restrictions</option>
-                    <option value="Other">Other</option> 
-                </select>    
-            </div>
+        {/* Other Health Goals Input */}
+        {formData.healthGoals === 'Other' && (
+          <Form.Field
+            control={Input}
+            type="text"
+            name="healthGoalsOther"
+            placeholder="Please specify"
+            value={formData.healthGoalsOther}
+            onChange={handleChange}
+            required
+          />
+        )}
 
-            {formData.dietaryRestrictions === 'Other' && (
-                <div>
-                    <input
-                    type="text"
-                    name="dietaryRestrictionsOther"
-                    placeholder="Please specify"
-                    value={formData.dietaryRestrictionsOther}
-                    onChange={handleChange}
-                    required
-                    />
-                </div>
-            )}
+        {/* Submit Button */}
+        <Button type="submit" primary>
+          Get Suggestions
+        </Button>
+      </Form>      
+    </div>
 
-            <div>
-                <select name="healthGoals" 
-                value={formData.healthGoals} 
-                onChange={handleChange} 
-                required
-                >
-                    <option value="">Select Health Goals</option>
-                    <option value="Lose Fat">Lose Fat</option>
-                    <option value="Build Muscle">Build Muscle</option>
-                    <option value="Other">Other</option> 
-                </select>    
-            </div>
-
-            {formData.healthGoals === 'Other' && (
-                <div>
-                    <input
-                    type="text"
-                    name="healthGoalsOther"
-                    placeholder="Please specify"
-                    value={formData.healthGoalsOther}
-                    onChange={handleChange}
-                    required
-                    />
-                </div>
-            )}
-
-            <div>
-                <button type="submit">Get Suggestions</button>
-            </div>
-        </form>
-    )
+  );
 }
 
-export default InputForm
+export default InputForm;
