@@ -1,14 +1,14 @@
 import React from "react";
-// import './css/Header.css';
+import './css/Header.css';
 
 const Header = () => (
-    <header className="header">
+    <header as="h1" className="header">
         <div className="container">
             <h1 className="logo">Weight Loss App</h1>
             <nav className="nav">
-                <ul className="nav-list">
+               {/* <ul className="nav-list">
                     <li><a href="#info">Info</a></li>
-                </ul>
+                </ul> */}
             </nav>
         </div>
     </header>
