@@ -23,7 +23,7 @@ app.post('/api/getSuggestions', async (req, res) => {
 
     Additionally, please select and disclose one of the following weight loss plans based on the user's preferences. Only select a weight loss plan if the health goal selected is not "Build Muscle." The descriptions of each are as follows:
     
-    - All may be used with our without weightloss medication
+    - All may be used with our without weightloss medication.
 
     Rapid:
     - Lose 3-5 lb/week
@@ -57,7 +57,7 @@ app.post('/api/getSuggestions', async (req, res) => {
     try {
         const suggestions = await model.generateContent(prompt);
 
-        console.log(suggestions.response.text());
+        console.log(`Suggestions Generated Successfully! ${suggestions.response.text()}`);
     
         res.json({ suggestions });
     } catch (error) {
