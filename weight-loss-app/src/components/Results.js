@@ -1,5 +1,6 @@
 import React from 'react';
 import './css/Results.css';
+import ReactMarkdown from 'react-markdown';
 
 function Results({ data }) {
 
@@ -8,7 +9,7 @@ function Results({ data }) {
     return (
         <div className="results">
             <h2>Your Personalized Weight Loss Suggestions</h2>
-            <p>{suggestionsString}</p>
+            <ReactMarkdown>{suggestionsString}</ReactMarkdown>
         </div>
     );
 }

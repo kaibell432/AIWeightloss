@@ -17,6 +17,7 @@ function InputForm({ setResults }) {
     healthGoals: '',
     healthGoalsOther: '',
   });
+  const [loading, setLoading] = useState(false);
 
   // Options for Dropdowns
   const genderOptions = [
@@ -66,6 +67,8 @@ function InputForm({ setResults }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setLoading(true);
+    console.log(`Begin loading`);
 
     if (!formData.heightFeet || formData.heightInches === '') {
       alert('Please enter your full height.');
@@ -100,13 +103,19 @@ function InputForm({ setResults }) {
       .then((data) => {
         console.log(`Received data:`, data);
         setResults(data);
+        setLoading(false);
+        console.log(`End loading`);
       })
-      .catch((err) => console.error('Error:', err));
+      .catch((err) => {
+        console.error('Error:', err);
+        setLoading(false);
+        console.log(`End loading`);
+      })
   };
 
   return (
     <div className="form-container">
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit} loading={loading}>
         {/* Age Input */}
         <Form.Field
           control={Input}
@@ -240,8 +249,11 @@ function InputForm({ setResults }) {
         <Button type="submit" primary>
           Get Suggestions
         </Button>
-      </Form>      
+      </Form>
+
     </div>
+
+    
 
   );
 }
