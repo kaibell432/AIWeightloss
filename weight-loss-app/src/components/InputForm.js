@@ -106,14 +106,16 @@ function InputForm({ setResults }) {
         setLoading(false);
         console.log(`End loading`);
       })
-      .catch((err) => console.error('Error:', err));
-      //setLoading(false);
-      // console.log(`End loading`);
+      .catch((err) => {
+        console.error('Error:', err);
+        setLoading(false);
+        console.log(`End loading`);
+      })
   };
 
   return (
     <div className="form-container">
-      <Form onSubmit={handleSubmit}  loading={loading}>
+      <Form onSubmit={handleSubmit} loading={loading}>
         {/* Age Input */}
         <Form.Field
           control={Input}
