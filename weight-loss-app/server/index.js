@@ -58,8 +58,11 @@ app.post('/api/getSuggestions', async (req, res) => {
         const suggestions = await model.generateContent(prompt);
 
         console.log(`Suggestions Generated Successfully! ${suggestions.response.text()}`);
+        console.log(`Type of response:`, typeof suggestions.response.text())
+
+        var suggestionsBack = suggestions.response.text();
     
-        res.json({ suggestions });
+        res.json({ suggestionsBack });
     } catch (error) {
         console.error('Error fetching suggestions:', error);
         res.status(500).json({ error: 'Error fetching suggestions '});
