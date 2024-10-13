@@ -52,7 +52,8 @@ app.post('/api/getSuggestions', async (req, res) => {
     - For best results, this plan requires logging your food intake so we can guide you with calorie, protein, and carb goals.
     - Ideal plan as you are getting close to your weight loss goal AND for maintenance.
 
-    Ensure that all measurements use the imperial system. Offer recommendations in a supportive tone and remind the user to consult a healthcare professional before making significant changes.`;
+    Ensure that all measurements use the imperial system. Additionally, if you decide to mention the user's BMI, mention that BMI is not a great measure of body composition and the reasons for that.
+    Offer recommendations in a supportive tone and remind the user to consult a healthcare professional before making significant changes.`;
 
     try {
         const suggestions = await model.generateContent(prompt);
