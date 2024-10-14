@@ -21,48 +21,50 @@ app.post('/api/getSuggestions', async (req, res) => {
     - Dietary Restrictions: ${userInput.dietaryRestrictions}
     - Health Goals: ${userInput.healthGoals}
 
-    Additionally, please select and disclose one of the following weight loss plans based on the user's preferences. Only select a weight loss plan if the health goal selected is not "Build Muscle." The descriptions of each are as follows:
-    
-    - All may be used with our without weightloss medication.
+    Additionally, please produce a recommended number of daily calories for the user's meals. I will be using this data to produce some weekly meal plans for the users.
 
-    Rapid:
-    - Lose 3-5 lb/week
-    - All medical meals with NO prepped meals per week
-    - Learn how to transition out and keep the weight off long term
-    - Ideal for a jump start OR if trying to lose more than 30 lb
-    - Provides the most structure and convenience
-
-    Moderate:
-    - Lose 2-3 lb/week
-    - All medical meals with ONE prepped meal per week
-    - Learn how to transition out and keep the weight off long term
-    - Ideal for a jump start OR if trying to lose more than 30 lb
-    - Provides excellent structure and convenience 
-
-    Gradual:
-    - Lose 1-2 lb/week
-    - All medical meals with 1-2 prepped meals per week
-    - Learn how to transition out and keep the weight off long term
-    - Can be great for a jump start or for any amount of weight loss
-    - Provides very good structure and convenience
-
-    Standard:
-    - Weight loss at the patient's own pace
-    - All your own prepped meals. Ideal for those who enjoy meal prepping and eating their own meals.
-    - For best results, this plan requires logging your food intake so we can guide you with calorie, protein, and carb goals.
-    - Ideal plan as you are getting close to your weight loss goal AND for maintenance.
-
-    Ensure that all measurements use the imperial system. Offer recommendations in a supportive tone and remind the user to consult a healthcare professional before making significant changes.`;
+    Ensure that all measurements use the imperial system. Additionally, if you decide to mention the user's BMI, mention that BMI is not a great measure of body composition and the reasons for that.
+    Offer recommendations in a supportive tone and remind the user to consult a healthcare professional before making significant changes.`;
 
     try {
-        const suggestions = await model.generateContent(prompt);
+        const weightLossSuggestions = await model.generateContent(prompt);
 
-        console.log(`Suggestions Generated Successfully! ${suggestions.response.text()}`);
-        console.log(`Type of response:`, typeof suggestions.response.text())
+        console.log(`Suggestions Generated Successfully! ${weightLossSuggestions.response.text()}`);
+        console.log(`Type of response:`, typeof weightLossSuggestions.response.text())
 
-        var suggestionsBack = suggestions.response.text();
+        var weightLossSuggestionsBack = weightLossSuggestions.response.text();
     
-        res.json({ suggestionsBack });
+        res.json({ weightLossSuggestionsBack });
+    } catch (error) {
+        console.error('Error fetching suggestions:', error);
+        res.status(500).json({ error: 'Error fetching suggestions '});
+    }
+});
+
+app.post('/api/getMealPlan', async (req, res) => {
+    const userInput = req.body;
+
+    const prompt = ` 
+    As a certified nutritionist, provide 7 days of personalized meal plans that include the user's 3 following staple foods:
+    
+    - Note: Make sure that you provide acurrate calorie data by using the USDA's food database.
+
+    - Daily Calorie Goal: ${userInput.dailyCals}
+    - Staple Food 1: ${userInput.stapleFood1}
+    - Staple Food 2: ${userInput.stapleFood2}
+    - Staple Food 3: ${userInput.stapleFood3}
+    
+    If any of the staple foods make it difficult to achieve the proper calorie goals, let the user know what you suggest replacing the items with and why.`;
+
+    try {
+        const mealPlanSuggestions = await model.generateContent(prompt);
+
+        console.log(`Suggestions Generated Successfully! ${mealPlanSuggestions.response.text()}`);
+        console.log(`Type of response:`, typeof mealPlanSuggestions.response.text())
+
+        var mealPlanSuggestionsBack = mealPlanSuggestions.response.text();
+    
+        res.json({ mealPlanSuggestionsBack });
     } catch (error) {
         console.error('Error fetching suggestions:', error);
         res.status(500).json({ error: 'Error fetching suggestions '});

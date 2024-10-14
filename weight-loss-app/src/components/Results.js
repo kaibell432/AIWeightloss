@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 
 function Results({ data }) {
 
-    const suggestionsString = data.suggestionsBack;
+    const suggestionsString = data.weightLossSuggestionsBack;
 
     return (
         <div className="results">
