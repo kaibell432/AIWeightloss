@@ -45,16 +45,37 @@ app.post('/api/getMealPlan', async (req, res) => {
     const userInput = req.body;
 
     const prompt = ` 
-    As a certified nutritionist, provide 7 days of personalized meal plans that include the user's 3 following staple foods:
-    
-    - Note: Make sure that you provide acurrate calorie data by using the USDA's food database.
+    As a certified nutritionist, provide 7 suggestions of personalized meal plans with a variety of focuses that find ways to implement the user's 3 staple foods. You may use Breakfast, Lunch, Dinner, Snack as the meal types.
 
     - Daily Calorie Goal: ${userInput.dailyCals}
     - Staple Food 1: ${userInput.stapleFood1}
     - Staple Food 2: ${userInput.stapleFood2}
     - Staple Food 3: ${userInput.stapleFood3}
+
+        - Formatting:
+        ## Personalized Meal Plans with Staple Foods: Staple Food 1, Staple Food 2, Staple Food 3
+
+        **Daily Calorie Goal: Daily Calorie Goal**
+
+        **Note:** Calorie data is sourced from the USDA Food Composition Database.    
+
+        **Meal Plan Number: Meal Plan Number Focus**
+
+        **Focus Notes:** High protein, moderate carbohydrates, moderate fat
+
+        * **Meal (calories):** Item (calories)
+
+        * **Staple Food Concerns:** Cheese snacks are calorie-dense, which can make it challenging to stay within the 1700 calorie goal. Consider substituting with low-fat yogurt or a handful of nuts for a lower-calorie, nutrient-rich snack.
+        * **Variety in Staple Foods:** To ensure a balanced diet, diversify protein sources beyond chicken. Include lean meats, fish, tofu, beans, and lentils.  Explore a wider range of vegetables instead of relying solely on green beans.
+
+        **Important Note:**  This is a general guide, and individual needs may vary. It's crucial to consult a registered dietitian for a personalized meal plan tailored to your specific health goals and dietary restrictions. 
+    End formatting
     
-    If any of the staple foods make it difficult to achieve the proper calorie goals, let the user know what you suggest replacing the items with and why.`;
+    - Additional Notes: 
+        - Make sure that you provide acurrate calorie data by using the USDA's food database.
+        - Ensure that you include the focuses of each meal suggestion (i.e. Proteins, Vegetables, Fiber, Carbs, etc.)
+        - Ensure that you always let the user know the source of your calorie data.
+        - If any of the staple foods make it difficult to achieve the proper calorie goals, let the user know what you suggest replacing the items with and why.`;
 
     try {
         const mealPlanSuggestions = await model.generateContent(prompt);
