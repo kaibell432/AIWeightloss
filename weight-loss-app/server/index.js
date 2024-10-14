@@ -45,7 +45,8 @@ app.post('/api/getMealPlan', async (req, res) => {
     const userInput = req.body;
 
     const prompt = ` 
-    As a certified nutritionist, provide 7 suggestions of personalized meal plans with a variety of focuses that find ways to implement the user's 3 staple foods. You may use Breakfast, Lunch, Dinner, Snack as the meal types.
+    As a certified nutritionist, provide 7 suggestions of personalized meal plans with a variety of focuses that find ways to implement the user's 3 staple foods. 
+    You may use Breakfast, Lunch, Dinner, Snack as the meal types. Additionally, canvass the web and suggest 3 specific recipes, make sure to include links.
 
     - Daily Calorie Goal: ${userInput.dailyCals}
     - Staple Food 1: ${userInput.stapleFood1}
@@ -63,11 +64,15 @@ app.post('/api/getMealPlan', async (req, res) => {
 
         **Focus Notes:** High protein, moderate carbohydrates, moderate fat
 
-        * **Meal (calories):** Item (calories)
+        * **Meal Name (calories):** Item (calories)
 
-        * **Staple Food Concerns:** Cheese snacks are calorie-dense, which can make it challenging to stay within the 1700 calorie goal. Consider substituting with low-fat yogurt or a handful of nuts for a lower-calorie, nutrient-rich snack.
-        * **Variety in Staple Foods:** To ensure a balanced diet, diversify protein sources beyond chicken. Include lean meats, fish, tofu, beans, and lentils.  Explore a wider range of vegetables instead of relying solely on green beans.
-
+        * **Staple Food Concerns:** 
+        * **Variety in Staple Foods:** 
+    
+        
+        ## Specific Recipe Suggestions ##
+        * **Recipe number:** Recipe Title (link)
+    
         **Important Note:**  This is a general guide, and individual needs may vary. It's crucial to consult a registered dietitian for a personalized meal plan tailored to your specific health goals and dietary restrictions. 
     End formatting
     
