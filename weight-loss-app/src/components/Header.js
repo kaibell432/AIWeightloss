@@ -5,20 +5,11 @@ import './css/Header.css';
 
 const Header = () => (
     <Menu fixed="top" inverted>
-        <Menu.Item header>
-            <NavLink to="/" exact>
-                Weight Loss App
-            </NavLink>
+        <Menu.Item as={NavLink} to="/" header className="weight-loss-app">
+        Weight Loss App
         </Menu.Item>
-        <Menu.Item header>
-            <NavLink as={NavLink} to="/" exact>
-                Home
-            </NavLink>
-        </Menu.Item>
-        <Menu.Item header>
-        <NavLink as={NavLink} to="/" exact>
-                Meal Plan Generator
-            </NavLink>
+        <Menu.Item as={NavLink} to="/meal-plan" className="meal-plan-item">
+        Meal Plan Generator
         </Menu.Item>
     </Menu>
 );
