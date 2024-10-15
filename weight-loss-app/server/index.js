@@ -45,7 +45,8 @@ app.post('/api/getMealPlan', async (req, res) => {
     const userInput = req.body;
 
     const prompt = ` 
-    As a certified nutritionist, provide 7 suggestions of personalized meal plans with a variety of focuses that find ways to implement the user's 3 staple foods. 
+    As a certified nutritionist, provide exactly 7 suggestions of personalized meal plans with a variety of focuses that find ways to implement up to 3 staple foods inputted by the user. 
+    Only require the user to add a minimum of 1 staple food.
     You may use Breakfast, Lunch, Dinner, Snack as the meal types. Additionally, canvass the web and suggest 3 specific recipes, make sure to include links.
 
     - Daily Calorie Goal: ${userInput.dailyCals}

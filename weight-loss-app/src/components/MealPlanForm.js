@@ -65,31 +65,33 @@ function MealPlanForm({ setMealPlanResults }) {
                     control={Input}
                     type="text"
                     name="stapleFood1"
-                    placeholder="Please Enter Your First Staple Food"
+                    placeholder="Please enter a staple food (Up to 3)"
                     value={formData.stapleFood1}
                     onChange={handleChange}
                     required
                 />
 
-                <Form.Field
-                    control={Input}
-                    type="text"
-                    name="stapleFood2"
-                    placeholder="Please Enter Your Second Staple Food"
-                    value={formData.stapleFood2}
-                    onChange={handleChange}
-                    required
-                />
+                {formData.stapleFood1 != '' && (    
+                    <Form.Field
+                        control={Input}
+                        type="text"
+                        name="stapleFood2"
+                        placeholder="Please enter an additional staple food (If desired)"
+                        value={formData.stapleFood2}
+                        onChange={handleChange}
+                    />
+                )}
 
-                <Form.Field
-                    control={Input}
-                    type="text"
-                    name="stapleFood3"
-                    placeholder="Please Enter Your Third Staple Food"
-                    value={formData.stapleFood3}
-                    onChange={handleChange}
-                    required
-                />
+                {formData.stapleFood2 != '' && (    
+                    <Form.Field
+                        control={Input}
+                        type="text"
+                        name="stapleFood3"
+                        placeholder="Please enter an additional staple food (If desired)"
+                        value={formData.stapleFood3}
+                        onChange={handleChange}
+                    />
+                )}
 
                 <Button type="submit">
                     Get Meal Plans
