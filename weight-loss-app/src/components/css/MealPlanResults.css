@@ -2,6 +2,7 @@
     margin: 20px;
 }
 
-.save {
-    margin-bottom: 10px;
+.save-button {
+    margin-bottom: 10px !important;
+    background-color: red !important;
 }

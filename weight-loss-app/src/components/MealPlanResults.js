@@ -1,6 +1,6 @@
 import React from 'react';
 import './css/MealPlanResults.css';
-import { Button } from 'semantic-ui-react';
+import 'semantic-ui-react';
 
 function MealPlanResults({ data }) {
   console.log('MealPlanResults received data:', data);
@@ -54,11 +54,10 @@ function MealPlanResults({ data }) {
             ))}
         </ul>
         
-        <div className="save">
-            <Button onClick={() => handleSaveMealPlan(plan)} className="save-button">
-                Save meal
-            </Button>
-        </div>
+        <button class="ui primary button" onClick={() => handleSaveMealPlan(plan)} className="save-button">
+            Save meal
+        </button>
+
     </div>
 ))}
 
