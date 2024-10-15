@@ -2,12 +2,28 @@ require('dotenv').config();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const express = require('express');
 const { use } = require('react');
+const cors = require('cors');
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
 const app = express();
 app.use(express.json());
+app.use(
+    cors({
+        origin: 'http://localhost:3000',
+        credentials: true,
+    })
+);
 
+/*app.use (
+    session({
+        secret: 'session_secret', // Replace with a secure secret
+        resave: false,
+        saveUninitialized: false,
+        // cookie { secure: true } // Use secure cookies in production with https
+    })
+);
+*/
 const port = process.env.PORT || 5000;
 
 app.post('/api/getSuggestions', async (req, res) => {
@@ -46,57 +62,94 @@ app.post('/api/getMealPlan', async (req, res) => {
     const userInput = req.body;
 
     const prompt = ` 
-    As a certified nutritionist, provide exactly 7 suggestions of personalized meal plans with a variety of focuses that find ways to implement up to 3 staple foods inputted by the user. 
-    Only require the user to add a minimum of 1 staple food. The user will also provide any dietary restrictions they may have.
-    You may use Breakfast, Lunch, Dinner, Snack as the meal types. Additionally, canvass the web and suggest 3 specific recipes, make sure to include links.
+As a certified nutritionist, provide exactly 7 suggestions of personalized meal plans with a variety of focuses that find ways to implement up to 3 staple foods inputted by the user. Only require the user to add a minimum of 1 staple food. The user will also provide any dietary restrictions they may have. You may use Breakfast, Lunch, Dinner, Snack as the meal types. Additionally, canvass the web and suggest 3 specific recipes; make sure to include links.
 
-    - Daily Calorie Goal: ${userInput.dailyCals}
-    - Staple Food 1: ${userInput.stapleFood1}
-    - Staple Food 2: ${userInput.stapleFood2}
-    - Staple Food 3: ${userInput.stapleFood3}
-    - Dietary Restrictions: ${userInput.dietaryRestrictions}
+- Daily Calorie Goal: ${userInput.dailyCals}
+- Staple Food 1: ${userInput.stapleFood1}
+- Staple Food 2: ${userInput.stapleFood2}
+- Staple Food 3: ${userInput.stapleFood3}
+- Dietary Restrictions: ${userInput.dietaryRestrictions}
 
-        - Formatting:
-        ## Personalized Meal Plans with Staple Foods: Staple Food 1, Staple Food 2, Staple Food 3
+**Important Instructions:**
 
-        **Daily Calorie Goal: Daily Calorie Goal**
+- Output the meal plans and recipes in **valid JSON format only**.
+- Ensure there are **no trailing commas** in arrays or objects.
+- Do **not** include any additional explanations or text outside of the JSON.
+- Do **not** include any markdown formatting or code blocks.
+- The JSON should be properly formatted and parseable.
 
-        **Note:** Calorie data is sourced from the USDA Food Composition Database.    
+**The JSON structure should be as follows:**
 
-        **Meal Plan Number: Meal Plan Number Focus**
+{
+  "mealPlans": [
+    {
+      "mealPlanNumber": 1,
+      "focus": "Focus Description",
+      "meals": [
+        {
+          "mealType": "Meal Type",
+          "mealName": "Meal Name",
+          "calories": 0,
+          "items": [
+            { "item": "Item Name", "calories": 0 }
+          ]
+        }
+        // Include additional meal objects as needed
+      ],
+      "stapleFoodConcerns": "Any concerns",
+      "varietyInStapleFoods": "Variety description"
+    }
+    // Include additional meal plan objects up to 7 in total
+  ],
+  "recipes": [
+    {
+      "recipeNumber": 1,
+      "title": "Recipe Title",
+      "link": "Recipe Link"
+    }
+    // Include additional recipe objects up to 3 in total
+  ],
+  "notes": "Calorie data is sourced from the USDA Food Composition Database."
+}
 
-        **Focus Notes:** High protein, moderate carbohydrates, moderate fat
+**Additional Notes:**
 
-        * **Meal Name (calories):** Item (calories)
+- The "mealPlans" array should contain **exactly 7 meal plan objects**.
+- Each "meals" array should contain multiple meal objects (e.g., Breakfast, Lunch, Dinner, Snack).
+- The "recipes" array should contain **exactly 3 recipe objects**.
 
-        * **Staple Food Concerns:** 
-        * **Variety in Staple Foods:** 
-    
-        
-        ## Specific Recipe Suggestions ##
-        * **Recipe number:** Recipe Title (link)
-    
-        **Important Note:**  This is a general guide, and individual needs may vary. It's crucial to consult a registered dietitian for a personalized meal plan tailored to your specific health goals and dietary restrictions. 
-    End formatting
-    
-    - Additional Notes: 
-        - Make sure that you provide acurrate calorie data by using the USDA's food database.
-        - Ensure that you include the focuses of each meal suggestion (i.e. Proteins, Vegetables, Fiber, Carbs, etc.)
-        - Ensure that you always let the user know the source of your calorie data.
-        - If any of the staple foods make it difficult to achieve the proper calorie goals, let the user know what you suggest replacing the items with and why.`;
+**Important Notes:**
+
+- Provide accurate calorie data by using the USDA's food database.
+- Include the focuses of each meal suggestion (e.g., Proteins, Vegetables, Fiber, Carbs, etc.).
+- Always let the user know the source of your calorie data.
+- If any staple foods make it difficult to achieve proper calorie goals, let the user know what you suggest replacing the items with and why.
+
+    `;
 
     try {
         const mealPlanSuggestions = await model.generateContent(prompt);
 
-        console.log(`Suggestions Generated Successfully! ${mealPlanSuggestions.response.text()}`);
-        console.log(`Type of response:`, typeof mealPlanSuggestions.response.text())
+        const generatedText = mealPlanSuggestions.response.text();
 
-        var mealPlanSuggestionsBack = mealPlanSuggestions.response.text();
-    
-        res.json({ mealPlanSuggestionsBack });
+        // Extract JSON
+        const jsonStartIndex = generatedText.indexOf('{');
+        const jsonEndIndex = generatedText.lastIndexOf('}') + 1;
+        const jsonString = generatedText.substring(jsonStartIndex, jsonEndIndex);
+
+        let mealPlanData;
+        try {
+            mealPlanData = JSON.parse(jsonString);
+        } catch (parseError) {
+            console.error('Error parsing JSON: ', parseError);
+            console.error('Generated Text: ', generatedText);
+            return res.status(500).json({ error: 'Error parsing meal plan data' });
+        }
+
+        res.json({ mealPlanData });
     } catch (error) {
-        console.error('Error fetching suggestions:', error);
-        res.status(500).json({ error: 'Error fetching suggestions '});
+        console.error('Error fetching meal plan: ', error);
+        res.status(500).json({ error: 'Error fetching meal plan' });
     }
 });
 

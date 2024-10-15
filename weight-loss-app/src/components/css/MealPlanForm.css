@@ -71,11 +71,11 @@ body {
     padding: 1em;
     font-size: 1em;
     color: white !important;
-    background-color: rgb(222, 75, 26) !important;
+    background-color: rgb(222, 157, 26) !important;
 }
 
 .ui.button:hover {
-    background-color: rgb(255, 75, 26) !important;
+    background-color: rgb(255, 179, 26) !important;
 }
 
 /* Optional: Customizing Labels */

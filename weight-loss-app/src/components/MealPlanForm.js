@@ -50,8 +50,8 @@ function MealPlanForm({ setMealPlanResults }) {
         })
             .then((res) => res.json())
             .then((data) => {
-                console.log(`Received data:`, data.mealPlanSuggestionsBack);
-                setMealPlanResults(data.mealPlanSuggestionsBack);
+                console.log(`Received data:`, data.mealPlanData);
+                setMealPlanResults(data.mealPlanData);
                 setLoading(false);
             })
             .catch((err) => {
@@ -87,7 +87,7 @@ function MealPlanForm({ setMealPlanResults }) {
                     required
                 />
 
-                {formData.stapleFood1 != '' && (    
+                {formData.stapleFood1 !== '' && (    
                     <Form.Field
                         control={Input}
                         type="text"
@@ -98,7 +98,7 @@ function MealPlanForm({ setMealPlanResults }) {
                     />
                 )}
 
-                {formData.stapleFood2 != '' && (    
+                {formData.stapleFood2 !== '' && (    
                     <Form.Field
                         control={Input}
                         type="text"
