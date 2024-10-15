@@ -1,6 +1,6 @@
 import React from 'react';
 import './css/MealPlanResults.css';
-import 'semantic-ui-react';
+import { Button } from 'semantic-ui-react';
 
 function MealPlanResults({ data }) {
   console.log('MealPlanResults received data:', data);
@@ -54,15 +54,25 @@ function MealPlanResults({ data }) {
             ))}
         </ul>
         
-        <button class="ui primary button" onClick={() => handleSaveMealPlan(plan)} className="save-button">
+        <Button onClick={() => handleSaveMealPlan(plan)} className="save-button">
             Save meal
-        </button>
+        </Button>
 
     </div>
 ))}
 
-      {/* Render recipes and notes */}
-    </div>
+    <h2>Specific Recipe Suggestions</h2>
+    <ul>
+        {recipes.map((recipe) => (
+            <li key={recipe.recipeNumber}>
+                <a href={recipe.link} target="_blank" rel="noopener noreferrer">
+                    {recipe.title}
+                </a>
+            </li>
+        ))}
+    </ul>
+
+</div>
   );
 }
 
