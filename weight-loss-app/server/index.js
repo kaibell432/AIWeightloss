@@ -62,7 +62,7 @@ app.post('/api/getMealPlan', async (req, res) => {
     const userInput = req.body;
 
     const prompt = ` 
-As a certified nutritionist, provide exactly 7 suggestions of personalized meal plans with a variety of focuses that find ways to implement up to 3 staple foods inputted by the user. Only require the user to add a minimum of 1 staple food. The user will also provide any dietary restrictions they may have. You may use Breakfast, Lunch, Dinner, Snack as the meal types. Additionally, canvass the web and suggest 3 specific recipes; make sure to include links.
+As a certified nutritionist, provide exactly 7 suggestions of personalized meal plans with a variety of focuses that find ways to implement up to 3 staple foods inputted by the user. Only require the user to add a minimum of 1 staple food. The user will also provide any dietary restrictions they may have. You may use Breakfast, Lunch, Dinner, Snack as the meal types. Additionally, canvass the web and suggest the specific dinner recipe for each of the 7 plans; make sure to include links.
 
 - Daily Calorie Goal: ${userInput.dailyCals}
 - Staple Food 1: ${userInput.stapleFood1}
@@ -96,18 +96,17 @@ As a certified nutritionist, provide exactly 7 suggestions of personalized meal 
         }
         // Include additional meal objects as needed
       ],
+      "recipe": [
+      {
+        "recipeNumber": num,
+        "title": "Recipe Title",
+        "link": "Recipe Link"
+      }
+      ],
       "stapleFoodConcerns": "Any concerns",
       "varietyInStapleFoods": "Variety description"
     }
     // Include additional meal plan objects up to 7 in total
-  ],
-  "recipes": [
-    {
-      "recipeNumber": 1,
-      "title": "Recipe Title",
-      "link": "Recipe Link"
-    }
-    // Include additional recipe objects up to 3 in total
   ],
   "notes": "Calorie data is sourced from the USDA Food Composition Database."
 }

@@ -23,18 +23,18 @@ function MealPlanResults({ data }) {
   return (
     <div className="meal-plan-results">
       <h2>Your Personalized Meal Plan Suggestions</h2>
+        <p>
+            <strong>Staple Food Concerns:</strong> {mealPlans[0].stapleFoodConcerns}
+        </p>
+        <p>
+            <strong>Variety in Staple Foods:</strong> {mealPlans[0].varietyInStapleFoods}
+        </p>
 
       {mealPlans.map((plan) => (
         <div key={plan.mealPlanNumber} className="meal-plan-container">
           <h3>
             Meal Plan {plan.mealPlanNumber}: {plan.focus}
           </h3>
-          <p>
-            <strong>Staple Food Concers:</strong> {plan.stapleFoodConcerns}
-          </p>
-          <p>
-            <strong>Variety in Staple Foods:</strong> {plan.varietyInStapleFoods}
-          </p>
 
           <h4>Meals:</h4>
           <ul>
@@ -54,6 +54,19 @@ function MealPlanResults({ data }) {
             ))}
         </ul>
         
+        <h4>Dinner Recipe Suggestion:</h4>
+        <div className="recipe-suggestion">
+            {plan.recipe.map((recipe, recipeNumber) => (
+               <ul>
+                <li>
+                    <a href={recipe.link} target="_blank" rel="noopener noreferrer">
+                        {recipe.title}
+                    </a>
+                </li>
+               </ul>
+            ))}
+        </div>
+        
         <Button onClick={() => handleSaveMealPlan(plan)} className="save-button">
             Save meal
         </Button>
@@ -61,16 +74,7 @@ function MealPlanResults({ data }) {
     </div>
 ))}
 
-    <h2>Specific Recipe Suggestions</h2>
-    <ul>
-        {recipes.map((recipe) => (
-            <li key={recipe.recipeNumber}>
-                <a href={recipe.link} target="_blank" rel="noopener noreferrer">
-                    {recipe.title}
-                </a>
-            </li>
-        ))}
-    </ul>
+
 
 </div>
   );
