@@ -115,6 +115,10 @@ function InputForm({ setResults }) {
 
   return (
     <div className="form-container">
+      <div className="form-header">
+        <h2>Weight Loss Suggestions</h2>
+        <p>This tool will generate specific recommendations to achieve your weight goals based on the information provided below.</p>
+      </div>
       <Form onSubmit={handleSubmit} loading={loading}>
         {/* Age Input */}
         <Form.Field
@@ -130,7 +134,7 @@ function InputForm({ setResults }) {
         {/* Gender Dropdown */}
         <Form.Field
           control={Dropdown}
-          placeholder="Select Gender"
+          placeholder="Select gender"
           fluid
           selection
           options={genderOptions}
@@ -183,7 +187,7 @@ function InputForm({ setResults }) {
         {/* Activity Level Dropdown */}
         <Form.Field
           control={Dropdown}
-          placeholder="Select Activity Level"
+          placeholder="Select activity level"
           fluid
           selection
           options={activityOptions}
@@ -196,7 +200,7 @@ function InputForm({ setResults }) {
         {/* Dietary Restrictions Dropdown */}
         <Form.Field
           control={Dropdown}
-          placeholder="Select Dietary Restrictions"
+          placeholder="Select dietary restrictions"
           fluid
           selection
           options={dietaryOptions}
@@ -222,7 +226,7 @@ function InputForm({ setResults }) {
         {/* Health Goals Dropdown */}
         <Form.Field
           control={Dropdown}
-          placeholder="Select Health Goals"
+          placeholder="Select health goals"
           fluid
           selection
           options={healthGoalsOptions}

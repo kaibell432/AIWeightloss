@@ -1,6 +1,7 @@
 require('dotenv').config();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const express = require('express');
+const { use } = require('react');
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
@@ -46,13 +47,14 @@ app.post('/api/getMealPlan', async (req, res) => {
 
     const prompt = ` 
     As a certified nutritionist, provide exactly 7 suggestions of personalized meal plans with a variety of focuses that find ways to implement up to 3 staple foods inputted by the user. 
-    Only require the user to add a minimum of 1 staple food.
+    Only require the user to add a minimum of 1 staple food. The user will also provide any dietary restrictions they may have.
     You may use Breakfast, Lunch, Dinner, Snack as the meal types. Additionally, canvass the web and suggest 3 specific recipes, make sure to include links.
 
     - Daily Calorie Goal: ${userInput.dailyCals}
     - Staple Food 1: ${userInput.stapleFood1}
     - Staple Food 2: ${userInput.stapleFood2}
     - Staple Food 3: ${userInput.stapleFood3}
+    - Dietary Restrictions: ${userInput.dietaryRestrictions}
 
         - Formatting:
         ## Personalized Meal Plans with Staple Foods: Staple Food 1, Staple Food 2, Staple Food 3
