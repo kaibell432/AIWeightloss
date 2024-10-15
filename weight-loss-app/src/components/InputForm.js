@@ -250,7 +250,7 @@ function InputForm({ setResults }) {
         )}
 
         {/* Submit Button */}
-        <Button type="submit" primary>
+        <Button type="submit" primary className="get-suggestions-button">
           Get Suggestions
         </Button>
       </Form>

@@ -134,7 +134,7 @@ function MealPlanForm({ setMealPlanResults }) {
                 />
                 )}
 
-                <Button type="submit">
+                <Button type="submit" className="gen-meals-button">
                     Generate Meals
                 </Button>
             </Form>
