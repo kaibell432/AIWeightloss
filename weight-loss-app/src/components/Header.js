@@ -1,5 +1,5 @@
 import React from "react";
-import { Menu } from "semantic-ui-react";
+import { Menu, MenuMenu, } from "semantic-ui-react";
 import { NavLink } from 'react-router-dom';
 import './css/Header.css';
 
@@ -11,12 +11,15 @@ const Header = () => (
         <Menu.Item as={NavLink} to="/meal-plan-generator" className="meal-plan-generator">
         Meal Plan Generator
         </Menu.Item>
-        <Menu.Item as={NavLink} to="/login" className="login" position="">
-        Log In
-        </Menu.Item>
-        <Menu.Item as={NavLink} to="/register" className="login" position="right">
-        Register
-        </Menu.Item>
+
+        <MenuMenu fixed="top" position="right">
+        <   Menu.Item as={NavLink} to="/login" className="login">
+                Log In
+            </Menu.Item>
+            <Menu.Item as={NavLink} to="/register" className="login">
+                Register
+            </Menu.Item>
+        </MenuMenu>
     </Menu>
 );
 
