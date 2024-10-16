@@ -3,10 +3,14 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const express = require('express');
 const { use } = require('react');
 const cors = require('cors');
+const mongoose = require('mongoose');
 
+const mongoURI = process.env.MONGODB_URI;
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
 const app = express();
+
+
 app.use(express.json());
 app.use(
     cors({
@@ -14,6 +18,12 @@ app.use(
         credentials: true,
     })
 );
+
+mongoose
+  .connect(mongoURI, {
+  })
+  .then(()=> console.log('MongoDB connected'))
+  .catch((err) => console.log('MongoDB connection error:', err));
 
 /*app.use (
     session({
@@ -24,7 +34,7 @@ app.use(
     })
 );
 */
-const port = process.env.PORT || 5000;
+const port = process.env.PORT;
 
 app.post('/api/getSuggestions', async (req, res) => {
     const userInput = req.body;
