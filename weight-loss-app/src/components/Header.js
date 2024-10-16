@@ -11,8 +11,11 @@ const Header = () => (
         <Menu.Item as={NavLink} to="/meal-plan-generator" className="meal-plan-generator">
         Meal Plan Generator
         </Menu.Item>
-        <Menu.Item as={NavLink} to="/login" className="login" position="right">
+        <Menu.Item as={NavLink} to="/login" className="login" position="">
         Log In
+        </Menu.Item>
+        <Menu.Item as={NavLink} to="/register" className="login" position="right">
+        Register
         </Menu.Item>
     </Menu>
 );
