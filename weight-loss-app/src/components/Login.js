@@ -1,22 +1,21 @@
 import React, { useState } from 'react';
 import {
-    FormInput,
     FormGroup,
-    FormCheckbox,
     Button,
     Form,
-    Segment,
     Input,
   } from 'semantic-ui-react';
 import './css/Register.css';
+import { useNavigate } from 'react-router-dom';
 
-function Login() {
+function Login( { setIsAuthenticated } ) {
     const [formData, setFormData] = useState({
         username: '',
         password: '',
     });
 
     const [message, setMessage] = useState('');
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         setFormData({
@@ -37,6 +36,9 @@ function Login() {
         .then(res => res.json())
         .then(data => {
             if (data.message === 'Login successful') {
+                setIsAuthenticated(true);
+                navigate('/');
+                alert(data.message);
             } else {
                 alert(data.message);
             }
@@ -44,6 +46,7 @@ function Login() {
         .catch(error => {
             console.error('Login error:', error);
             setMessage('An error occurred during login.');
+            alert(message);
         });
     };
 

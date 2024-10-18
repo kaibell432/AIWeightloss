@@ -39,9 +39,9 @@ function Register() {
         .then(res => res.json())
         .then(data => {
             if (data.message === 'User registered successfully') {
-                setMessage('Registration successful! You may now log in.');
+                alert('Registration successful! You may now log in.');
             } else {
-                setMessage(data.message);
+                alert(data.message);
             }
         })
         .catch(error => {

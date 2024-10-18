@@ -133,6 +133,15 @@ app.post('/api/logout', (req, res) => {
   });
 });
 
+// Check Auth Endpoint
+app.get('/api/checkAuth', (req, res) => {
+  if (req.session.userId) {
+    res.json({ isAuthenticated: true });
+  } else {
+    res.json({ isAuthenticated: false });
+  }
+});
+
 // Middleware to check if user is authenticated
 const isAuthenticated = (req, res, next) => {
   if (req.session.userId) {
