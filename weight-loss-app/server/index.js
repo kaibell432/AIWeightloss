@@ -51,7 +51,7 @@ const port = process.env.PORT;
 // Registration Route
 app.post('/api/register', async (req, res) => {
   try {
-    const { username, password, email } = req.body;
+    const { username, password } = req.body;
 
     if (!username || !password) {
       return res.status(400).json({ message: 'Username and password are required.' });
@@ -63,16 +63,6 @@ app.post('/api/register', async (req, res) => {
       return res.status(400).json({ message: 'Username already taken' });
     }
 
-    if (email) {
-      if(!validator.isEmail(email)){
-        return res.status(400).json({ message: 'Invalid email format' });
-      }
-      const emailExists = await User.findOne({ email });
-      if (emailExists) {
-        return res.status(400).json({ message: 'Email already taken' });
-      }
-    }
-
     // Encrypt Pass
     const saltRounds = 10;
     const hashedPass = await bcrypt.hash(password, saltRounds);
@@ -82,10 +72,6 @@ app.post('/api/register', async (req, res) => {
       username,
       password: hashedPass,
     });
-
-    if (email) {
-      newUserData.email = email;
-    }
 
     const newUser = new User(newUserData);
     await newUser.save();

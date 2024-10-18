@@ -10,7 +10,7 @@ import {
   } from 'semantic-ui-react';
 import './css/Register.css';
 
-function Register() {
+function Login() {
     const [formData, setFormData] = useState({
         username: '',
         password: '',
@@ -28,32 +28,29 @@ function Register() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        console.log('FormData before sending:', formData);
-
-        fetch('/api/register', {
+        fetch('/api/login', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(formData),
-            credentials: 'include'
+            credentials: 'include',
         })
         .then(res => res.json())
         .then(data => {
-            if (data.message === 'User registered successfully') {
-                setMessage('Registration successful! You may now log in.');
+            if (data.message === 'Login successful') {
             } else {
-                setMessage(data.message);
+                alert(data.message);
             }
         })
         .catch(error => {
-            console.error('Registration error:', error);
-            setMessage('An error occurred during registration.');
+            console.error('Login error:', error);
+            setMessage('An error occurred during login.');
         });
     };
 
     return (
         <div className="form-container">
-            <h2 className="form-header">Register</h2>
-            <Form onSubmit={handleSubmit} inverted className="reg-form">
+            <h2 className="form-header">Login</h2>
+            <Form onSubmit={handleSubmit} inverted className="login-form">
                 <FormGroup widths='equal'>
                     <Form.Field
                         control={Input}
@@ -74,10 +71,10 @@ function Register() {
                         required
                     />
                 </FormGroup>
-                <Button type="submit">Register</Button>
+                <Button type="submit">Login</Button>
             </Form>
         </div>
     );
 }
 
-export default Register;
+export default Login;
