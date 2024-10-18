@@ -18,7 +18,7 @@ const Header = ({ isAuthenticated, onLogout }) => (
                     <Menu.Item as={NavLink} to="/account" className="account">
                         Account
                     </Menu.Item>
-                    <Menu.Item as={NavLink} onClick={onLogout} className="logout">
+                    <Menu.Item onClick={onLogout} className="logout">
                         Log Out
                     </Menu.Item>
                 </>
