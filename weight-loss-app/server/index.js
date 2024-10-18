@@ -51,11 +51,13 @@ const port = process.env.PORT;
 // Registration Route
 app.post('/api/register', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    let { username, password } = req.body;
 
     if (!username || !password) {
       return res.status(400).json({ message: 'Username and password are required.' });
     }
+
+    username = username.toLowerCase();
     
     // Check if user exists already
     const userExists = await User.findOne({ username });
@@ -89,7 +91,13 @@ app.post('/api/register', async (req, res) => {
 // Login Route
 app.post('/api/login', async (req, res) => {
   try {
-    const {username, password} = req.body;
+    let {username, password} = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Username and password are required' });
+    }
+
+    username = username.toLowerCase();
 
     // Find user
     const user = await User.findOne({ username });
