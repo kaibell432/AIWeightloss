@@ -1,0 +1,12 @@
+.meal-plan-results {
+    margin: 20px;
+}
+
+.save-button {
+    margin-bottom: 10px !important;
+    background-color: red !important;
+}
+
+.recipe-suggestion {
+    margin-bottom: 20px;
+}

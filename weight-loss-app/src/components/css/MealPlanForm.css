@@ -1,0 +1,94 @@
+/* Reset and Box Sizing */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Center the form on the page */
+body {
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+
+/* Form Container */
+.ui.form {
+    width: 100%;
+    max-width: 600px;
+    padding: 1em;
+    margin: 0 auto;
+}
+
+.form-header {
+    text-align: center;
+    margin-top: 4em;
+}
+
+/* Form Fields */
+.ui.form .field {
+    margin-bottom: 1em;
+    width: 100%;
+}
+
+/* Adjust Dropdown Fields */
+.ui.input > input,
+.ui.dropdown {
+    /* Custom styles for dropdowns if needed */
+    width: 100%;
+}
+
+/* Right Labeled Input (e.g., Weight Input) */
+.ui.right.labeled.input {
+    width: 100%;
+}
+
+/* Height Selection Group */
+.ui.form .fields .field {
+  /* Ensure equal width for height fields */
+    width: 50%;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .ui.form {
+        padding: 0.5em;
+        margin: 0.5em;
+    }
+
+    .ui.form .fields {
+        flex-direction: column;
+    }
+
+    .ui.form .fields .field {
+        width: 100% !important;
+    }
+}
+
+/* Custom Styles for the Submit Button */
+.ui.button {
+    width: 100%;
+    padding: 1em;
+    font-size: 1em;
+    color: white !important;
+    background-color: rgb(222, 157, 26) !important;
+}
+
+.ui.button:hover {
+    background-color: rgb(255, 179, 26) !important;
+}
+
+/* Optional: Customizing Labels */
+.ui.form .field > label {
+    font-weight: bold;
+}
+
+/* Optional: Styling the 'Other' Input Fields */
+.ui.form .field.other-input {
+    margin-top: -0.5em;
+}
+
+/* Optional: Adjusting Form Spacing */
+.ui.form .field:not(:last-child) {
+    margin-bottom: 1em;
+}
