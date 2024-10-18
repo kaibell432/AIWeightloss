@@ -8,6 +8,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const bcrypt = require('bcrypt');
 const User = require('./models/User');
+const validator = require('validator');
 
 const mongoURI = process.env.MONGODB_URI;
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
@@ -50,7 +51,11 @@ const port = process.env.PORT;
 // Registration Route
 app.post('/api/register', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, email } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Username and password are required.' });
+    }
     
     // Check if user exists already
     const userExists = await User.findOne({ username });
@@ -58,16 +63,31 @@ app.post('/api/register', async (req, res) => {
       return res.status(400).json({ message: 'Username already taken' });
     }
 
+    if (email) {
+      if(!validator.isEmail(email)){
+        return res.status(400).json({ message: 'Invalid email format' });
+      }
+      const emailExists = await User.findOne({ email });
+      if (emailExists) {
+        return res.status(400).json({ message: 'Email already taken' });
+      }
+    }
+
     // Encrypt Pass
     const saltRounds = 10;
     const hashedPass = await bcrypt.hash(password, saltRounds);
 
     // Create user
-    const newUser = new User({
+    const newUserData = new User({
       username,
       password: hashedPass,
     });
 
+    if (email) {
+      newUserData.email = email;
+    }
+
+    const newUser = new User(newUserData);
     await newUser.save();
 
     // Auto login after registration
