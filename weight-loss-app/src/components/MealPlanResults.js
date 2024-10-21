@@ -56,7 +56,7 @@ function MealPlanResults({ data }) {
         
         <h4>Dinner Recipe Suggestion:</h4>
         <div className="recipe-suggestion">
-            {plan.recipe.map((recipe, recipeNumber) => (
+            {plan.recipe.map((recipe, index) => (
                <ul>
                 <li>
                     <a href={recipe.link} target="_blank" rel="noopener noreferrer">

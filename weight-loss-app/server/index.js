@@ -9,6 +9,7 @@ const MongoStore = require('connect-mongo');
 const bcrypt = require('bcrypt');
 const User = require('./models/User');
 const validator = require('validator');
+const { getRecipes } = require('./spoonacular');
 
 const mongoURI = process.env.MONGODB_URI;
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
@@ -188,27 +189,104 @@ app.post('/api/getSuggestions', async (req, res) => {
     }
 });
 
-// Meal Plan Gen
+// Import necessary modules at the top of your file if not already imported
+
 app.post('/api/getMealPlan', async (req, res) => {
+  try {
     const userInput = req.body;
 
-    const prompt = ` 
-As a certified nutritionist, provide exactly 7 suggestions of personalized meal plans with a variety of focuses that find ways to implement up to 3 staple foods inputted by the user. Only require the user to add a minimum of 1 staple food. The user will also provide any dietary restrictions they may have. You may use Breakfast, Lunch, Dinner, Snack as the meal types. Additionally, canvass the web and suggest the specific dinner recipe for each of the 7 plans; make sure to include links.
+    // Extract user inputs
+    const { dailyCals, stapleFood1, stapleFood2, stapleFood3, dietaryRestrictions } = userInput;
 
-- Daily Calorie Goal: ${userInput.dailyCals}
-- Staple Food 1: ${userInput.stapleFood1}
-- Staple Food 2: ${userInput.stapleFood2}
-- Staple Food 3: ${userInput.stapleFood3}
-- Dietary Restrictions: ${userInput.dietaryRestrictions}
+    // Sanitize and standardize staple foods
+    const stapleFoodsArray = [stapleFood1, stapleFood2, stapleFood3]
+      .filter(Boolean)
+      .map(food => food.toLowerCase().trim());
+
+    // Log the sanitized staple foods
+    console.log('Staple Foods:', stapleFoodsArray);
+
+    // Build staple foods string
+    const stapleFoods = stapleFoodsArray.join(',');
+
+    // Map dietary restrictions
+    const dietMap = {
+      'Vegetarian': 'vegetarian',
+      'Vegan': 'vegan',
+      'Gluten Free': 'gluten free',
+      'Ketogenic': 'ketogenic',
+      'Pescetarian': 'pescetarian',
+      'Paleo': 'paleo',
+      'Primal': 'primal',
+      'Whole30': 'whole30',
+    };
+    const diet = dietMap[dietaryRestrictions] || '';
+
+    // Prepare parameters for Spoonacular API
+    const params = {
+      number: 7, // Fetch 7 recipes for 7 days
+      type: 'main course',
+      // diet: diet, // Commented out temporarily to test
+      // includeIngredients: stapleFoods, // Commented out temporarily to test
+      // maxCalories: dailyCals, // Commented out temporarily to test
+      sort: 'random',
+      addRecipeInformation: true,
+      fillIngredients: true,
+    };
+
+    // Log the API parameters
+    console.log('Spoonacular API params:', params);
+
+    let recipesData;
+    try {
+      // Fetch recipes from Spoonacular
+      recipesData = await getRecipes(params);
+    } catch (error) {
+      if (error.response) {
+        console.error('Spoonacular API Error:', error.response.data);
+      } else {
+        console.error('Error fetching recipes from Spoonacular:', error.message);
+      }
+      return res.status(500).json({ error: 'Error fetching recipes from Spoonacular' });
+    }
+
+    // Check if recipes are returned
+    if (!recipesData || !recipesData.results || recipesData.results.length === 0) {
+      console.error('No recipes found with the given parameters.');
+      return res.status(200).json({
+        error: 'No recipes found with the given parameters. Please adjust your inputs.',
+      });
+    }
+
+    const recipes = recipesData.results;
+
+    // Log the number of recipes found
+    console.log('Number of recipes found:', recipes.length);
+
+    // Prepare recipe titles to include in the prompt
+    const recipeTitles = recipes.map(recipe => recipe.title);
+
+    // Now prepare the prompt for Gemini
+    const prompt = `
+As a certified nutritionist, please create a 7-day personalized meal plan based on the following information:
+
+- Daily Calorie Goal: ${dailyCals}
+- Staple Foods: ${stapleFoodsArray.join(', ')}
+- Dietary Restrictions: ${dietaryRestrictions}
 
 **Important Instructions:**
 
-- Output the meal plans and recipes in **valid JSON format only**.
+- Incorporate the following dinner recipes into each day's meal plan in order:
+
+${recipeTitles.map((title, index) => `Day ${index + 1}: ${title}`).join('\n')}
+
+- Use Breakfast, Lunch, Dinner, Snack as meal types.
+- Output the meal plans in **valid JSON format only**.
 - Ensure there are **no trailing commas** in arrays or objects.
 - Do **not** include any additional explanations or text outside of the JSON.
 - Do **not** include any markdown formatting or code blocks.
 - The JSON should be properly formatted and parseable.
-- Make sure to include protein in grams
+- Make sure to include protein in grams.
 
 **The JSON structure should be as follows:**
 
@@ -229,13 +307,6 @@ As a certified nutritionist, provide exactly 7 suggestions of personalized meal 
         }
         // Include additional meal objects as needed
       ],
-      "recipe": [
-      {
-        "recipeNumber": num,
-        "title": "Recipe Title",
-        "link": "Recipe Link"
-      }
-      ],
       "stapleFoodConcerns": "Any concerns",
       "varietyInStapleFoods": "Variety description"
     }
@@ -248,7 +319,7 @@ As a certified nutritionist, provide exactly 7 suggestions of personalized meal 
 
 - The "mealPlans" array should contain **exactly 7 meal plan objects**.
 - Each "meals" array should contain multiple meal objects (e.g., Breakfast, Lunch, Dinner, Snack).
-- The "recipes" array should contain **exactly 3 recipe objects**.
+- The dinner meal for each day should correspond to the provided dinner recipe for that day.
 
 **Important Notes:**
 
@@ -256,34 +327,53 @@ As a certified nutritionist, provide exactly 7 suggestions of personalized meal 
 - Include the focuses of each meal suggestion (e.g., Proteins, Vegetables, Fiber, Carbs, etc.).
 - Always let the user know the source of your calorie data.
 - If any staple foods make it difficult to achieve proper calorie goals, let the user know what you suggest replacing the items with and why.
-
     `;
 
+    // Log the prompt (optional, but helpful for debugging)
+    console.log('Gemini Prompt:', prompt);
+
+    let mealPlanSuggestions;
     try {
-        const mealPlanSuggestions = await model.generateContent(prompt);
-
-        const generatedText = mealPlanSuggestions.response.text();
-
-        // Extract JSON
-        const jsonStartIndex = generatedText.indexOf('{');
-        const jsonEndIndex = generatedText.lastIndexOf('}') + 1;
-        const jsonString = generatedText.substring(jsonStartIndex, jsonEndIndex);
-
-        let mealPlanData;
-        try {
-            mealPlanData = JSON.parse(jsonString);
-        } catch (parseError) {
-            console.error('Error parsing JSON: ', parseError);
-            console.error('Generated Text: ', generatedText);
-            return res.status(500).json({ error: 'Error parsing meal plan data' });
-        }
-
-        res.json({ mealPlanData });
+      mealPlanSuggestions = await model.generateContent(prompt);
     } catch (error) {
-        console.error('Error fetching meal plan: ', error);
-        res.status(500).json({ error: 'Error fetching meal plan' });
+      console.error('Error generating content with Gemini:', error);
+      return res.status(500).json({ error: 'Error generating meal plan' });
     }
+
+    const generatedText = mealPlanSuggestions.response.text();
+
+    // Extract JSON
+    const jsonStartIndex = generatedText.indexOf('{');
+    const jsonEndIndex = generatedText.lastIndexOf('}') + 1;
+    const jsonString = generatedText.substring(jsonStartIndex, jsonEndIndex);
+
+    let mealPlanData;
+    try {
+      mealPlanData = JSON.parse(jsonString);
+    } catch (parseError) {
+      console.error('Error parsing JSON:', parseError);
+      console.error('Generated Text:', generatedText);
+      return res.status(500).json({ error: 'Error parsing meal plan data' });
+    }
+
+    // Add recipe links to the dinner meals
+    mealPlanData.mealPlans.forEach((mealPlan, index) => {
+      const dinnerMeal = mealPlan.meals.find(meal => meal.mealType.toLowerCase() === 'dinner');
+      if (dinnerMeal && recipes[index]) {
+        dinnerMeal.recipe = {
+          title: recipes[index].title,
+          link: recipes[index].sourceUrl,
+        };
+      }
+    });
+
+    res.json({ mealPlanData });
+  } catch (error) {
+    console.error('Unexpected error in /api/getMealPlan:', error);
+    res.status(500).json({ error: 'Server error during meal plan generation' });
+  }
 });
+
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
