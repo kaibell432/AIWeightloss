@@ -208,7 +208,7 @@ As a certified nutritionist, provide exactly 7 suggestions of personalized meal 
 - Do **not** include any additional explanations or text outside of the JSON.
 - Do **not** include any markdown formatting or code blocks.
 - The JSON should be properly formatted and parseable.
-- Make sure to include protein in grams
+- Make sure to include protein in grams and ensure that the protein per item amounts to the total meal protein value.
 
 **The JSON structure should be as follows:**
 
