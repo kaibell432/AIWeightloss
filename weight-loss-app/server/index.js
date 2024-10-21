@@ -224,7 +224,7 @@ As a certified nutritionist, provide exactly 7 suggestions of personalized meal 
           "calories": 0,
           "protein": 0,
           "items": [
-            { "item": "Item Name", "calories": 0 }
+            { "item": "Item Name", "calories": 0, "protein": 0 }
           ]
         }
         // Include additional meal objects as needed
