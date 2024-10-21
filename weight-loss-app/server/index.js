@@ -9,6 +9,7 @@ const MongoStore = require('connect-mongo');
 const bcrypt = require('bcrypt');
 const User = require('./models/User');
 const validator = require('validator');
+const MealPlan = require('./models/MealPlan');
 
 const mongoURI = process.env.MONGODB_URI;
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
@@ -133,6 +134,14 @@ app.post('/api/logout', (req, res) => {
   });
 });
 
+// Middleware to check if user is authenticated
+const isAuthenticated = (req, res, next) => {
+  if (req.session.userId) {
+    return next();
+  }
+  res.status(401).json({ message: 'Unauthorized' });
+};
+
 // Check Auth Endpoint
 app.get('/api/checkAuth', (req, res) => {
   if (req.session.userId) {
@@ -141,14 +150,6 @@ app.get('/api/checkAuth', (req, res) => {
     res.json({ isAuthenticated: false });
   }
 });
-
-// Middleware to check if user is authenticated
-const isAuthenticated = (req, res, next) => {
-  if (req.session.userId) {
-    return next();
-  }
-  res.status(401).json({ message: 'Unauthorized' });
-};
 
 // Protected Route Test
 app.get('/api/protected', isAuthenticated, (req, res) => {
@@ -283,6 +284,25 @@ As a certified nutritionist, provide exactly 7 suggestions of personalized meal 
         console.error('Error fetching meal plan: ', error);
         res.status(500).json({ error: 'Error fetching meal plan' });
     }
+});
+
+// Save Meal Plan
+app.post('/api/saveMealPlan', isAuthenticated, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const mealPlanData = req.body.mealPlan;
+
+    const mealPlan = new MealPlan({
+      userId,
+      ...mealPlanData,
+    });
+
+    await mealPlan.save();
+    res.status(201).json({ message: 'Meal plan saved successfully' });
+  } catch (error) {
+    console.error('Error saving meal plan:', error);
+    res.status(500).json({ error: 'Error saving meal plan' });
+  }
 });
 
 app.listen(port, () => {

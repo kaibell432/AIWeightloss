@@ -16,8 +16,29 @@ function MealPlanResults({ data }) {
   }
 
   // Meal plan saving placeholder
-  const handleSaveMealPlan = (plan) => {
-    console.log('Saving meal plan:', plan);
+  const handleSaveMealPlan = async (plan) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/saveMealPlan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token,
+        },
+        body: JSON.stringify({ mealPlan: plan }),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        alert('Meal plan save successfully!');
+      } else {
+        alert(`Error saving meal plan: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('Error saving meal plan:', error);
+      alert('Error saving meal plan');
+    }
   };
 
   return (
