@@ -110,4 +110,26 @@ router.post('/register', async (req, res) => {
     }
   });
 
+  // Update user info
+  router.put('/user', isAuthenticated, async (req, res) => {
+    try {
+        const { firstName, lastName } = req.body;
+
+        const updatedUser = await User.findByIdAndUpdate(
+            req.session.userId,
+            { firstName, lastName },
+            { new: true, runValidators: true, select: '-password' }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json({ user: updatedUser, message: 'User information updated successfully!' });
+    } catch (error) {
+        console.error('Error updated user info:', error);
+        res.status(500).json({ message: 'Server error updating user info' });
+    }
+  });
+
   module.exports = router;
