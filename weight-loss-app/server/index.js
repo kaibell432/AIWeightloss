@@ -16,123 +16,39 @@ const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
 const app = express();
 
-
 app.use(express.json());
+app.use (
+  session({
+      secret: process.env.SESSION_SECRET, // Replace with a secure secret
+      resave: false,
+      saveUninitialized: false,
+      store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URI,
+        collectionName: 'sessions',
+      }),
+      cookie: { 
+        secure: false,
+        httpOnly: true, 
+        maxAge: 1000 * 60 * 60 * 24,
+      },
+}));
+
+const port = process.env.PORT;
+
 app.use(
     cors({
         origin: 'http://localhost:3000',
         credentials: true,
     })
 );
+const authRoutes = require('./routes/auth');
+app.use('/api', authRoutes);
 
 mongoose
   .connect(mongoURI, {
   })
   .then(()=> console.log('MongoDB connected'))
   .catch((err) => console.log('MongoDB connection error:', err));
-
-app.use (
-    session({
-        secret: 'session_secret', // Replace with a secure secret
-        resave: false,
-        saveUninitialized: false,
-        store: MongoStore.create({
-          mongoUrl: process.env.MONGODB_URI,
-          collectionName: 'sessions',
-        }),
-        cookie: { 
-          secure: false,
-          httpOnly: true, 
-          maxAge: 1000 * 60 * 60 * 24,
-        },
-}));
-
-const port = process.env.PORT;
-
-// Registration Route
-app.post('/api/register', async (req, res) => {
-  try {
-    let { username, password } = req.body;
-
-    if (!username || !password) {
-      return res.status(400).json({ message: 'Username and password are required.' });
-    }
-
-    username = username.toLowerCase();
-    
-    // Check if user exists already
-    const userExists = await User.findOne({ username });
-    if (userExists) {
-      return res.status(400).json({ message: 'Username already taken' });
-    }
-
-    // Encrypt Pass
-    const saltRounds = 10;
-    const hashedPass = await bcrypt.hash(password, saltRounds);
-
-    // Create user
-    const newUserData = new User({
-      username,
-      password: hashedPass,
-    });
-
-    const newUser = new User(newUserData);
-    await newUser.save();
-
-    // Auto login after registration
-    req.session.userId = newUser._id;
-
-    res.status(201).json({ message: 'User registered successfully' });
-  } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ message: 'Server error during registration' });
-  }
-});
-
-// Login Route
-app.post('/api/login', async (req, res) => {
-  try {
-    let {username, password} = req.body;
-
-    if (!username || !password) {
-      return res.status(400).json({ message: 'Username and password are required' });
-    }
-
-    username = username.toLowerCase();
-
-    // Find user
-    const user = await User.findOne({ username });
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid username or password' });
-    }
-
-    // Compare passwords
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
-      return res.status(400).json({ message: 'Invalid username or password' });
-    }
-
-    // Set user session
-    req.session.userId = user._id;
-
-    res.json({ message: 'Login successful' });
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ message: 'Server error during login' });
-  }
-});
-
-// Logout Route
-app.post('/api/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.error('Logout error:', err);
-      return res.status(500).json({ message: 'Server error during logout' });
-    }
-    res.clearCookie('connect.sid');
-    res.json({ message: 'Logout successful' });
-  });
-});
 
 // Middleware to check if user is authenticated
 const isAuthenticated = (req, res, next) => {
@@ -289,7 +205,7 @@ As a certified nutritionist, provide exactly 7 suggestions of personalized meal 
 // Save Meal Plan
 app.post('/api/saveMealPlan', isAuthenticated, async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.session.userId;
     const mealPlanData = req.body.mealPlan;
 
     const mealPlan = new MealPlan({

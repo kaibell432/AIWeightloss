@@ -14,7 +14,7 @@ function App() {
   const [results, setResults] = useState(null);
   const [mealPlanResults, setMealPlanResults] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const navigate = useNavigate(); // Now works because App is within <Router>
+  const navigate = useNavigate();
 
   // Check auth status
   useEffect(() => {
@@ -30,19 +30,21 @@ function App() {
       });
   }, []);
 
-  const handleLogout = () => {
-    fetch('/api/logout', {
-      method: 'POST',
-      credentials: 'include',
-    })
-      .then(res => res.json())
-      .then(() => {
-        setIsAuthenticated(false);
-        navigate('/login'); // Now works without error
-      })
-      .catch(err => {
-        console.error('Error during logout', err);
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/logout', {
+        method: 'POST',
+        credentials: 'include', 
       });
+
+      if (response.ok) {
+        setIsAuthenticated(false);
+      } else {
+        console.error('Logout failed:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error during logout', error);
+    }
   };
 
   return (
