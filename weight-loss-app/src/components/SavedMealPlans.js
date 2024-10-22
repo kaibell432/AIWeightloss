@@ -51,11 +51,24 @@ function SavedMealPlans() {
                             <Button
                                 basic
                                 primary
+                                className="view-meal-button"
                                 onClick={() => {
 
                                 }}
                             >
                                 View Details
+                            </Button>
+                        </Card.Content>
+                        <Card.Content extra>
+                            <Button
+                                basic
+                                color="red"
+                                className="delete-meal-button"
+                                onClick={() => {
+
+                                }}
+                            >
+                                Delete Meal
                             </Button>
                         </Card.Content>
                     </Card>

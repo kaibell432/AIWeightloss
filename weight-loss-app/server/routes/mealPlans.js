@@ -20,4 +20,21 @@ router.get('/savedMealPlans', isAuthenticated, async (req, res) => {
     }
 });
 
+// Delete Meal
+router.delete('/mealPlans/:id', isAuthenticated, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedPlan = await MealPlan.findOneAndDelete({ _id: id, userId: req.session.userId });
+
+        if (!deletedPlan) {
+            return res.status(404).json({ message: 'Meal plan not found' });
+        }
+
+        res.json({ message: 'Meal plan deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting meal plan:', error);
+        res.status(500).json({ message: 'Server error deleting meal plan' })
+    }
+});
+
 module.exports = router;
