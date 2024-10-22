@@ -31,7 +31,7 @@ function MealPlanResults({ data }) {
       const data = await response.json();
       
       if (response.ok) {
-        alert('Meal plan save successfully!');
+        alert('Meal plan saved successfully!');
       } else {
         alert(`Error saving meal plan: ${data.error}`);
       }
