@@ -27,7 +27,7 @@ const Header = ({ isAuthenticated, onLogout }) => (
                     <Menu.Item as={NavLink} to="/login" className="login">
                     Log In
                     </Menu.Item>
-                    <Menu.Item as={NavLink} to="/register" className="login">
+                    <Menu.Item as={NavLink} to="/register" className="register">
                         Register
                     </Menu.Item>
                 </>
