@@ -3,6 +3,13 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
 
+const isAuthenticated = (req, res, next) => {
+    if (req.session.userId) {
+        return next();
+    }
+    res.status(401).json({ message: 'Unauthorized' });
+};
+
 // Registration Route
 router.post('/register', async (req, res) => {
     try {
@@ -87,6 +94,20 @@ router.post('/register', async (req, res) => {
       res.clearCookie('connect.sid');
       res.json({ message: 'Logout successful' });
     });
+  });
+
+  // Get user info
+  router.get('/user', isAuthenticated, async (req, res) => {
+    try {
+        const user = await User.findById(req.session.userId).select('-password');
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json({ user });
+    } catch (error) {
+        console.error('Error fetching user info:', error);
+        res.status(500).json({ message: 'Server fetching user info' });
+    }
   });
 
   module.exports = router;

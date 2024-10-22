@@ -43,6 +43,8 @@ app.use(
 );
 const authRoutes = require('./routes/auth');
 app.use('/api', authRoutes);
+const mealPlanRoutes = require('./routes/mealPlans');
+app.use('/api', mealPlanRoutes);
 
 mongoose
   .connect(mongoURI, {
