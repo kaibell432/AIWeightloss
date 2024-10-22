@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Menu, Segment, Message } from 'semantic-ui-react';
-// import './css/Account.css';
+import './css/Account.css';
 import SavedMealPlans from './SavedMealPlans';
 
 function Account () {
@@ -125,7 +125,7 @@ function Account () {
     return (
         <div className="account-page">
             <h2>My Account</h2>
-            <Menu pointing secondary>
+            <Menu pointing secondary inverted className="account-menu">
                 <Menu.Item
                     name="accountInfo"
                     active={activeItem === 'accountInfo'}
@@ -141,7 +141,7 @@ function Account () {
                     Saved Meal Plans
                 </Menu.Item>
             </Menu>
-            <Segment>{renderContent()}</Segment>
+            <Segment className="account-content">{renderContent()}</Segment>
         </div>
     );
 
