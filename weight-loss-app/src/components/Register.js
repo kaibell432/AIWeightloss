@@ -1,16 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-    FormInput,
     FormGroup,
-    FormCheckbox,
     Button,
     Form,
-    Segment,
     Input,
   } from 'semantic-ui-react';
-import './css/Register.css';
+import './css/LoginRegister.css';
 
 function Register() {
+
+    useEffect(() => {
+        // On component mount, prevent scrolling
+        document.body.style.overflow = 'hidden';
+    
+        // Cleanup function to reset the overflow when the component unmounts
+        return () => {
+          document.body.style.overflow = 'auto';
+        };
+      }, []);
+
     const [formData, setFormData] = useState({
         username: '',
         password: '',
@@ -51,32 +59,36 @@ function Register() {
     };
 
     return (
-        <div className="form-container">
-            <h2 className="form-header">Register</h2>
-            <Form onSubmit={handleSubmit} inverted className="reg-form">
-                <FormGroup widths='equal'>
-                    <Form.Field
-                        control={Input}
-                        type="text"
-                        name="username"
-                        placeholder="Username"
-                        onChange={handleChange}
-                        value={formData.username}
-                        required
-                    />
-                    <Form.Field
-                        control={Input}
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        onChange={handleChange}
-                        value={formData.password}
-                        required
-                    />
-                </FormGroup>
-                <Button type="submit">Register</Button>
-            </Form>
-        </div>
+        <body className="reg-body">
+            <div className="register-container">
+                <div className="logreg-header">
+                    <h2>Register</h2>
+                </div>
+                <Form onSubmit={handleSubmit} inverted className="reg-form">
+                    <FormGroup widths='equal'>
+                        <Form.Field
+                            control={Input}
+                            type="text"
+                            name="username"
+                            placeholder="Username"
+                            onChange={handleChange}
+                            value={formData.username}
+                            required
+                        />
+                        <Form.Field
+                            control={Input}
+                            type="password"
+                            name="password"
+                            placeholder="Password"
+                            onChange={handleChange}
+                            value={formData.password}
+                            required
+                        />
+                    </FormGroup>
+                    <Button type="submit" className="reg-button">Register</Button>
+                </Form>
+            </div>
+        </body>
     );
 }
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Message, Modal, Header, Confirm } from 'semantic-ui-react';
-// import './css/SavedMealPlans.css';
+import './css/SavedMealPlans.css';
 import MealPlanDetails from './MealPlanDetails';
 
 function SavedMealPlans() {
@@ -85,7 +85,7 @@ function SavedMealPlans() {
 
     return (
         <div className="saved-meal-plans">
-            <Card.Group>
+            <Card.Group className="meal-cards">
                 {mealPlans.map((plan) => (
                     <Card key={plan._id}>
                         <Card.Content>

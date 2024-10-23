@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom';
 import './css/Header.css';
 
 const Header = ({ isAuthenticated, onLogout }) => (
-    <Menu fixed="top" inverted>
+    <Menu className="navbar" fixed="top" inverted>
         <Menu.Item as={NavLink} to="/" header className="weight-loss-app">
         Weight Loss App
         </Menu.Item>

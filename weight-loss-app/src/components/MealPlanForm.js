@@ -62,7 +62,7 @@ function MealPlanForm({ setMealPlanResults }) {
 
     return (
         <div className="form-container">
-            <div className="form-header">
+            <div className="meal-gen-header">
                 <h2>Meal Plan Generator</h2>
                 <p>This tool will generate 7 meal options according to your specifications below.</p>
             </div>

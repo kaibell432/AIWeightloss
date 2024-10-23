@@ -125,7 +125,7 @@ function Account () {
 
     return (
         <div className="account-page">
-            <Menu pointing secondary inverted className="account-menu">
+            <Menu pointing secondary className="account-menu">
                 <Menu.Item
                     name="accountInfo"
                     active={activeItem === 'accountInfo'}
@@ -141,7 +141,9 @@ function Account () {
                     Saved Meal Plans
                 </Menu.Item>
             </Menu>
-            <Segment className="account-content">{renderContent()}</Segment>
+            <div className="account-content">
+                <Segment>{renderContent()}</Segment>
+            </div>
         </div>
     );
 

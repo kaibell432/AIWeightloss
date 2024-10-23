@@ -115,7 +115,7 @@ function InputForm({ setResults }) {
 
   return (
     <div className="form-container">
-      <div className="form-header">
+      <div className="suggestion-header">
         <h2>Weight Loss Suggestions</h2>
         <p>This tool will generate specific recommendations to achieve your weight goals based on the information provided below.</p>
       </div>

@@ -20,7 +20,7 @@ body {
     margin: 0 auto;
 }
 
-.form-header {
+.meal-gen-header {
     text-align: center;
     margin-top: 4em;
 }
@@ -65,16 +65,12 @@ body {
     }
 }
 
-/* Custom Styles for the Submit Button */
-.ui.button {
-    width: 100%;
-    padding: 1em;
-    font-size: 1em;
+.ui .button {
     color: white !important;
     background-color: rgb(222, 157, 26) !important;
 }
 
-.ui.button:hover {
+.ui .button:hover {
     background-color: rgb(255, 179, 26) !important;
 }
 
