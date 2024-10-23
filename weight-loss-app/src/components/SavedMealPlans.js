@@ -89,8 +89,8 @@ function SavedMealPlans() {
                 {mealPlans.map((plan) => (
                     <Card key={plan._id}>
                         <Card.Content>
-                            <Card.Header>Meal Plan {plan.mealPlanNumber}</Card.Header>
-                            <Card.Meta>{plan.focus}</Card.Meta>
+                            <Card.Header>Staple Foods: {plan.stapleFoods}</Card.Header>
+                            <Card.Meta>Focus: {plan.focus}</Card.Meta>
                             <Card.Description>
                                 {/*Filler*/}
                             </Card.Description>

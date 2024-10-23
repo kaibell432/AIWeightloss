@@ -9,13 +9,16 @@ function MealPlanDetails({ mealPlan }) {
             <Segment>
                 <Header as="h4">Meals:</Header>
                 <List divided relaxed>
-                    {mealPlan.meals.map((meal, index) => (
-                        <List.Item key={index}>
+                    {mealPlan.meals.map((meal, index) => {
+                        const totalProtein = meal.items.reduce((sum, item) => sum + item.protein, 0);
+                        
+                        return(
+                            <List.Item key={index}>
                             <List.Content>
                                 <List.Header>{meal.mealType}: {meal.mealName}</List.Header>
                                 <List.Description>
                                     <p>Calories: {meal.calories}</p>
-                                    <p>Protein: {meal.protein}</p>
+                                    <p>Protein: {totalProtein}g</p>
                                     <p>Items</p>
                                     <List bulleted>
                                         {meal.items.map((item, idx) => (
@@ -27,7 +30,8 @@ function MealPlanDetails({ mealPlan }) {
                                 </List.Description>
                             </List.Content>
                         </List.Item>
-                    ))}
+                        );
+                    })}
                 </List>
             </Segment>
         </div>

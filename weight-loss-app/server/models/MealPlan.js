@@ -8,6 +8,7 @@ const MealPlanSchema = new mongoose.Schema({
     },
     mealPlanNumber: Number,
     focus: String,
+    stapleFoods: String,
     meals: [
         {
             mealType: String,
