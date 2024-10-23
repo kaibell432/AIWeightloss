@@ -45,6 +45,7 @@ function Account () {
                 body: JSON.stringify({
                     firstName: userInfo.firstName,
                     lastName: userInfo.lastName,
+                    email: userInfo.email,
                 }),
             });
             const data = await response.json();
@@ -124,7 +125,6 @@ function Account () {
 
     return (
         <div className="account-page">
-            <h2>My Account</h2>
             <Menu pointing secondary inverted className="account-menu">
                 <Menu.Item
                     name="accountInfo"

@@ -26,6 +26,7 @@ const UserSchema = new mongoose.Schema({
         sparse: true,
         lowercase: true,
         trim: true,
+        default: '',
     },
 });
 
