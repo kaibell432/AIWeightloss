@@ -33,7 +33,7 @@ app.use (
       },
 }));
 
-const port = process.env.PORT;
+const port = process.env.PORT || 5000;
 
 app.use(
     cors({
