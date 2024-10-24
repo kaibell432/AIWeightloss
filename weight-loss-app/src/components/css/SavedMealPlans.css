@@ -1,3 +1,7 @@
 .meal-cards {
     justify-content: center;
 }
+
+.close-modal-button {
+    background-color: red !important;
+}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Dropdown } from 'semantic-ui-react';
+import { Form, Input, Button, Dropdown, Container } from 'semantic-ui-react';
 import './css/MealPlanForm.css'
 
 function MealPlanForm({ setMealPlanResults }) {
@@ -63,8 +63,10 @@ function MealPlanForm({ setMealPlanResults }) {
     return (
         <div className="form-container">
             <div className="meal-gen-header">
-                <h2>Meal Plan Generator</h2>
-                <p>This tool will generate 7 meal options according to your specifications below.</p>
+                <Container text>
+                    <h2>Meal Plan Generator</h2>
+                    <p>This tool will generate 7 meal options according to your specifications below.</p>
+                </Container>
             </div>
             <Form onSubmit={handleSubmit} loading={loading}>
             <Form.Field

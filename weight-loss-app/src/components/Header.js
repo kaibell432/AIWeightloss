@@ -9,7 +9,7 @@ const Header = ({ isAuthenticated, onLogout }) => (
         Home
         </Menu.Item>
         <Menu.Item as={NavLink} to="/weight-suggestions" header className="weight-loss-app">
-        Weight Loss App
+        Weight Suggestions
         </Menu.Item>
         <Menu.Item as={NavLink} to="/meal-plan-generator" className="meal-plan-generator">
         Meal Plan Generator

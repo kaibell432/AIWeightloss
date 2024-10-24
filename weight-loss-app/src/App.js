@@ -57,7 +57,7 @@ function App() {
             path="/"
             element={
               <>
-                <Home />
+                <Home isAuthenticated={isAuthenticated}/>
               </>
             }
           />

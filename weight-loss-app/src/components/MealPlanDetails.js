@@ -88,7 +88,7 @@ function MealPlanDetails({ mealPlan }) {
             {message && <Message positive>{message}</Message>}
             {error && <Message negative>{error}</Message>}
 
-            <Button color="green" onClick={handleExportEmail}>
+            <Button className="email-button" onClick={handleExportEmail}>
                 Export via Email
             </Button>
         </div>

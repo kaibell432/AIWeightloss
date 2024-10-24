@@ -133,14 +133,13 @@ function SavedMealPlans() {
                     open={open}
                     onClose={handleClose}
                     size="large"
-                    closeIcon
                 >
                     <Header icon="food" content={selectedMealPlan.title || `Staple Food(s): ${selectedMealPlan.stapleFoods}`} />
                     <Modal.Content scrolling>
                         <MealPlanDetails mealPlan={selectedMealPlan} />
                     </Modal.Content>
                     <Modal.Actions>
-                        <Button color="grey" onClick={handleClose}>
+                        <Button className="close-modal-button" onClick={handleClose}>
                             Close
                         </Button>
                     </Modal.Actions>
