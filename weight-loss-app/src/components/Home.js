@@ -37,7 +37,7 @@ function Home ({ isAuthenticated }) {
                         <Grid.Column textAlign="center">
                             <Icon name="food" size="huge" color="grey" />
                             <Header as="h3">Customized Meal Plans</Header>
-                            <p>Generate meal plans tailored to your dietary preferences!</p>
+                            <p>Generate and save meal plans tailored to your dietary preferences!</p>
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>

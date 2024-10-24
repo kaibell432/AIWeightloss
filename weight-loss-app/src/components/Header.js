@@ -8,7 +8,7 @@ const Header = ({ isAuthenticated, onLogout }) => (
         <Menu.Item as={NavLink} to="/" header className="home">
         Home
         </Menu.Item>
-        <Menu.Item as={NavLink} to="/weight-suggestions" header className="weight-loss-app">
+        <Menu.Item as={NavLink} to="/weight-suggestions" className="weight-loss-app">
         Weight Suggestions
         </Menu.Item>
         <Menu.Item as={NavLink} to="/meal-plan-generator" className="meal-plan-generator">
