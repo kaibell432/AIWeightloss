@@ -1,7 +1,7 @@
 // src/InputForm.js
 
 import React, { useState } from 'react';
-import { Form, Input, Dropdown, Button } from 'semantic-ui-react';
+import { Form, Input, Dropdown, Button, Container } from 'semantic-ui-react';
 import './css/InputForm.css';
 
 function InputForm({ setResults }) {
@@ -115,9 +115,11 @@ function InputForm({ setResults }) {
 
   return (
     <div className="form-container">
-      <div className="form-header">
-        <h2>Weight Loss Suggestions</h2>
-        <p>This tool will generate specific recommendations to achieve your weight goals based on the information provided below.</p>
+      <div className="suggestion-header">
+        <Container text>
+          <h2>Weight Loss Suggestions</h2>
+          <p>This tool will generate specific recommendations to achieve your weight goals based on the information provided below.</p>
+        </Container>
       </div>
       <Form onSubmit={handleSubmit} loading={loading}>
         {/* Age Input */}

@@ -136,6 +136,7 @@ As a certified nutritionist, provide exactly 7 suggestions of personalized meal 
     {
       "mealPlanNumber": 1,
       "focus": "Focus Description",
+      "stapleFoods": String (joined by commas if necessary),
       "meals": [
         {
           "mealType": "Meal Type",

@@ -1,14 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     FormGroup,
     Button,
     Form,
     Input,
   } from 'semantic-ui-react';
-import './css/Register.css';
+import './css/LoginRegister.css';
 import { useNavigate } from 'react-router-dom';
 
 function Login( { setIsAuthenticated } ) {
+
+    useEffect(() => {
+        // On component mount, prevent scrolling
+        document.body.style.overflow = 'hidden';
+    
+        // Cleanup function to reset the overflow when the component unmounts
+        return () => {
+          document.body.style.overflow = 'auto';
+        };
+      }, []);
+
+      
     const [formData, setFormData] = useState({
         username: '',
         password: '',
@@ -51,32 +63,36 @@ function Login( { setIsAuthenticated } ) {
     };
 
     return (
-        <div className="form-container">
-            <h2 className="form-header">Login</h2>
-            <Form onSubmit={handleSubmit} inverted className="login-form">
-                <FormGroup widths='equal'>
-                    <Form.Field
-                        control={Input}
-                        type="text"
-                        name="username"
-                        placeholder="Username"
-                        onChange={handleChange}
-                        value={formData.username}
-                        required
-                    />
-                    <Form.Field
-                        control={Input}
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        onChange={handleChange}
-                        value={formData.password}
-                        required
-                    />
-                </FormGroup>
-                <Button type="submit">Login</Button>
-            </Form>
-        </div>
+        <body className="login-body">
+            <div className="login-container">
+                <div className="logreg-header">
+                    <h2>Login</h2>
+                </div>
+                <Form onSubmit={handleSubmit} inverted className="login-form">
+                    <FormGroup widths='equal'>
+                        <Form.Field
+                            control={Input}
+                            type="text"
+                            name="username"
+                            placeholder="Username"
+                            onChange={handleChange}
+                            value={formData.username}
+                            required
+                        />
+                        <Form.Field
+                            control={Input}
+                            type="password"
+                            name="password"
+                            placeholder="Password"
+                            onChange={handleChange}
+                            value={formData.password}
+                            required
+                        />
+                    </FormGroup>
+                    <Button type="submit" className="login-button">Login</Button>
+                </Form>
+            </div>
+        </body>    
     );
 }
 

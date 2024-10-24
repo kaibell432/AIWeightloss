@@ -45,6 +45,7 @@ function Account () {
                 body: JSON.stringify({
                     firstName: userInfo.firstName,
                     lastName: userInfo.lastName,
+                    email: userInfo.email,
                 }),
             });
             const data = await response.json();
@@ -124,8 +125,7 @@ function Account () {
 
     return (
         <div className="account-page">
-            <h2>My Account</h2>
-            <Menu pointing secondary inverted className="account-menu">
+            <Menu pointing secondary className="account-menu">
                 <Menu.Item
                     name="accountInfo"
                     active={activeItem === 'accountInfo'}
@@ -141,7 +141,9 @@ function Account () {
                     Saved Meal Plans
                 </Menu.Item>
             </Menu>
-            <Segment className="account-content">{renderContent()}</Segment>
+            <div className="account-content">
+                <Segment>{renderContent()}</Segment>
+            </div>
         </div>
     );
 

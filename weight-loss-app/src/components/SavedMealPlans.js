@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Message, Modal, Header, Confirm } from 'semantic-ui-react';
-// import './css/SavedMealPlans.css';
+import './css/SavedMealPlans.css';
 import MealPlanDetails from './MealPlanDetails';
 
 function SavedMealPlans() {
@@ -85,12 +85,12 @@ function SavedMealPlans() {
 
     return (
         <div className="saved-meal-plans">
-            <Card.Group>
+            <Card.Group className="meal-cards">
                 {mealPlans.map((plan) => (
                     <Card key={plan._id}>
                         <Card.Content>
-                            <Card.Header>Meal Plan {plan.mealPlanNumber}</Card.Header>
-                            <Card.Meta>{plan.focus}</Card.Meta>
+                            <Card.Header>Staple Foods: {plan.stapleFoods}</Card.Header>
+                            <Card.Meta>Focus: {plan.focus}</Card.Meta>
                             <Card.Description>
                                 {/*Filler*/}
                             </Card.Description>
@@ -133,14 +133,13 @@ function SavedMealPlans() {
                     open={open}
                     onClose={handleClose}
                     size="large"
-                    closeIcon
                 >
-                    <Header icon="food" content={selectedMealPlan.title || `Meal Plan ${selectedMealPlan.mealPlanNumber}`} />
+                    <Header icon="food" content={selectedMealPlan.title || `Staple Food(s): ${selectedMealPlan.stapleFoods}`} />
                     <Modal.Content scrolling>
                         <MealPlanDetails mealPlan={selectedMealPlan} />
                     </Modal.Content>
                     <Modal.Actions>
-                        <Button color="grey" onClick={handleClose}>
+                        <Button className="close-modal-button" onClick={handleClose}>
                             Close
                         </Button>
                     </Modal.Actions>

@@ -1,0 +1,63 @@
+.logreg-header {
+    text-align: center;
+    margin-top: auto !important;
+    color: white;
+}
+
+.reg-button {
+    color: white !important;
+    background-color: purple !important;
+}
+
+.reg-body {
+    display: flex;
+    align-items: center;
+    min-height: 75vh;
+    margin: 0;
+}
+
+.register-container {
+    width: 100%;
+    max-width: 600px;
+    padding: 20px; 
+    margin: 0 auto;
+    border-radius: 12px;
+    background-color: #171540;
+}
+
+/* Allow scrolling on screens narrower than 600px */
+@media (max-width: 600px) {
+    html, body {
+        overflow: auto;
+    }
+    
+    body {
+        display: block; /* Remove flex to allow content to flow */
+    }
+    
+    .register-container {
+        margin: 20px; /* Add margin to prevent content from touching edges */
+    }
+}
+
+.login-button {
+    color: white !important;
+    background-color: purple !important;
+}
+
+.login-body {
+    display: flex;
+    align-items: center;
+    min-height: 75vh;
+    margin: 0;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 600px;
+    padding: 20px; 
+    margin: 0 auto;
+    border-radius: 12px;
+    background-color: #171540;
+}
+

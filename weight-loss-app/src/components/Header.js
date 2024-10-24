@@ -4,9 +4,12 @@ import { NavLink } from 'react-router-dom';
 import './css/Header.css';
 
 const Header = ({ isAuthenticated, onLogout }) => (
-    <Menu fixed="top" inverted>
-        <Menu.Item as={NavLink} to="/" header className="weight-loss-app">
-        Weight Loss App
+    <Menu className="navbar" fixed="top" inverted>
+        <Menu.Item as={NavLink} to="/" header className="home">
+        Home
+        </Menu.Item>
+        <Menu.Item as={NavLink} to="/weight-suggestions" className="weight-loss-app">
+        Weight Suggestions
         </Menu.Item>
         <Menu.Item as={NavLink} to="/meal-plan-generator" className="meal-plan-generator">
         Meal Plan Generator

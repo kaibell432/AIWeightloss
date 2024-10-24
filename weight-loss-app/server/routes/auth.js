@@ -113,11 +113,11 @@ router.post('/register', async (req, res) => {
   // Update user info
   router.put('/user', isAuthenticated, async (req, res) => {
     try {
-        const { firstName, lastName } = req.body;
+        const { email, firstName, lastName } = req.body;
 
         const updatedUser = await User.findByIdAndUpdate(
             req.session.userId,
-            { firstName, lastName },
+            { email, firstName, lastName },
             { new: true, runValidators: true, select: '-password' }
         );
 

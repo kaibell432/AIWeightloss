@@ -4,6 +4,7 @@ import Header from './components/Header';
 import Register from './components/Register';
 import Login from './components/Login';
 import Account from './components/Account';
+import Home from './components/Home';
 import InputForm from './components/InputForm';
 import Results from './components/Results';
 import Footer from './components/Footer';
@@ -52,8 +53,16 @@ function App() {
       <Header isAuthenticated={isAuthenticated} onLogout={handleLogout} />
       <div style={{ marginTop: `3em` }}>
         <Routes>
-          <Route
+        <Route
             path="/"
+            element={
+              <>
+                <Home isAuthenticated={isAuthenticated}/>
+              </>
+            }
+          />
+          <Route
+            path="/weight-suggestions"
             element={
               <>
                 <InputForm setResults={setResults} />
