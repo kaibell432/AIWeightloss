@@ -135,7 +135,7 @@ function SavedMealPlans() {
                     size="large"
                     closeIcon
                 >
-                    <Header icon="food" content={selectedMealPlan.title || `Meal Plan ${selectedMealPlan.mealPlanNumber}`} />
+                    <Header icon="food" content={selectedMealPlan.title || `Staple Food(s): ${selectedMealPlan.stapleFoods}`} />
                     <Modal.Content scrolling>
                         <MealPlanDetails mealPlan={selectedMealPlan} />
                     </Modal.Content>
