@@ -10,6 +10,7 @@ const bcrypt = require('bcrypt');
 const User = require('./models/User');
 const validator = require('validator');
 const MealPlan = require('./models/MealPlan');
+const path = require('path')
 
 const mongoURI = process.env.MONGODB_URI;
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
@@ -33,14 +34,15 @@ app.use (
       },
 }));
 
-const port = process.env.PORT || 5000;
-
 app.use(
     cors({
         origin: 'http://localhost:3000',
         credentials: true,
     })
 );
+
+app.use(express.static(path.join(__dirname, '..', 'build')));
+
 const authRoutes = require('./routes/auth');
 app.use('/api', authRoutes);
 const mealPlanRoutes = require('./routes/mealPlans');
@@ -224,6 +226,11 @@ app.post('/api/saveMealPlan', isAuthenticated, async (req, res) => {
   }
 });
 
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
+});
+
+const port = process.env.PORT || 5000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 })
