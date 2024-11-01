@@ -3,8 +3,16 @@
 }
 
 .save-button {
-    margin-bottom: 10px !important;
-    background-color: red !important;
+    color: white !important;
+    background-color: rgb(222, 157, 26) !important;
+}
+
+.save-button:hover {
+    background-color: rgb(255, 179, 26) !important;
+}
+
+.meal-plan-container {
+    padding-bottom: 50px;
 }
 
 .recipe-suggestion {

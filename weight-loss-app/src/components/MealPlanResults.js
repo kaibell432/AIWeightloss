@@ -2,7 +2,7 @@ import React from 'react';
 import './css/MealPlanResults.css';
 import { Button } from 'semantic-ui-react';
 
-function MealPlanResults({ data }) {
+function MealPlanResults({ data, isAuthenticated }) {
   console.log('MealPlanResults received data:', data);
 
   if (!data || typeof data !== 'object') {
@@ -32,6 +32,8 @@ function MealPlanResults({ data }) {
       
       if (response.ok) {
         alert('Meal plan saved successfully!');
+      } else if (!isAuthenticated) {
+        alert('Please create an account or login to save a meal.')
       } else {
         alert(`Error saving meal plan: ${data.error}`);
       }
