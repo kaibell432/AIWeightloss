@@ -5,6 +5,7 @@
   "proxy": "http://localhost:5000",
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
+    "@sendgrid/mail": "^8.1.4",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.0.1",
     "@testing-library/user-event": "^14.5.2",
@@ -13,11 +14,14 @@
     "bcryptjs": "^2.4.3",
     "connect-mongo": "^5.1.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
     "express-session": "^1.18.1",
     "express-validator": "^7.2.0",
     "googleapis": "^144.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.8.0",
+    "nodemailer": "^6.9.16",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-markdown": "^9.0.1",
@@ -28,10 +32,7 @@
     "validator": "^13.12.0",
     "web-vitals": "^4.2.4",
     "yarn": "^1.22.22",
-    "yarn-build": "^0.9.0",
-    "dotenv": "^16.4.5",
-    "express": "^4.21.1",
-    "nodemailer": "^6.9.16"
+    "yarn-build": "^0.9.0"
   },
   "scripts": {
     "start": "react-scripts start",

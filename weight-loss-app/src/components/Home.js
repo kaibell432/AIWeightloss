@@ -13,7 +13,7 @@ function Home ({ isAuthenticated }) {
                         Achieve Your Weight Goals
                     </h1>
                     <p className="hero-subtitle">
-                        Personalized weight management suggestions and meal plans tools to support your journey.
+                        Personalized weight management suggestions and a meal plan tool to support your journey.
                     </p>
                     <Button size="large" as={Link} to={isAuthenticated ? '/account' : '/register'}>
                         Get Started!
