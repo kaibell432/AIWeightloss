@@ -20,13 +20,13 @@
     width: 100%;
     max-width: 600px;
     padding: 20px; 
-    margin: 0 auto;
+    margin: 20px;
     border-radius: 12px;
     background-color: #171540;
 }
 
-/* Allow scrolling on screens narrower than 600px */
-@media (max-width: 600px) {
+/* Mobile Styles */
+@media (max-width: 767px) {
     html, body {
         overflow: auto;
     }
@@ -35,9 +35,6 @@
         display: block; /* Remove flex to allow content to flow */
     }
     
-    .register-container {
-        margin: 20px; /* Add margin to prevent content from touching edges */
-    }
 }
 
 .login-button {
@@ -56,7 +53,7 @@
     width: 100%;
     max-width: 600px;
     padding: 20px; 
-    margin: 0 auto;
+    margin: 20px;
     border-radius: 12px;
     background-color: #171540;
 }
