@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate, NavLink } from 'react-router-dom';
 import Header from './components/Header';
 import Register from './components/Register';
 import Login from './components/Login';
@@ -10,12 +10,26 @@ import Results from './components/Results';
 import Footer from './components/Footer';
 import MealPlanForm from './components/MealPlanForm';
 import MealPlanResults from './components/MealPlanResults';
+import { Sidebar, Menu } from 'semantic-ui-react';
 
 function App() {
   const [results, setResults] = useState(null);
   const [mealPlanResults, setMealPlanResults] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
+  
+  const [visible, setVisible] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 767);
+
+  const handleSidebarHide = () => setVisible(false);
+  const handleToggle = () => setVisible(!visible);
+
+  // Handle window resize to update isMobile state
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 767);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Check auth status
   useEffect(() => {
@@ -49,55 +63,104 @@ function App() {
   };
 
   return (
-    <>
-      <Header isAuthenticated={isAuthenticated} onLogout={handleLogout} />
-      <div style={{ marginTop: `3em` }}>
-        <Routes>
-        <Route
-            path="/"
-            element={
-              <>
-                <Home isAuthenticated={isAuthenticated}/>
-              </>
-            }
-          />
-          <Route
-            path="/weight-suggestions"
-            element={
-              <>
-                <InputForm setResults={setResults} />
-                {results && <Results data={results} />}
-              </>
-            }
-          />
-          <Route
-            path="/meal-plan-generator"
-            element={
-              <>
-                <MealPlanForm setMealPlanResults={setMealPlanResults} />
-                {mealPlanResults && <MealPlanResults data={mealPlanResults} />}
-              </>
-            }
-          />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/login"
-            element={<Login setIsAuthenticated={setIsAuthenticated} />}
-          />
-          <Route
-            path="/account"
-            element={
-              isAuthenticated ? (
-                <Account />
-              ) : (
-                <Navigate to="/login" replace />
-              )
-            }
-          />
-        </Routes>
-      </div>
-      <Footer />
-    </>
+    <Sidebar.Pushable>
+      <Sidebar
+        as={Menu}
+        animation="overlay"
+        inverted
+        onHide={handleSidebarHide}
+        vertical
+        visible={visible}
+        >
+          <Menu.Item as={NavLink} to="/" onClick={handleSidebarHide}>
+            Home
+          </Menu.Item>
+          <Menu.Item as={NavLink} to="/weight-suggestions" onClick={handleSidebarHide}>
+            Weight Suggestions
+          </Menu.Item>
+          <Menu.Item as={NavLink} to="/meal-plan-generator" onClick={handleSidebarHide}>
+            Meal Plan Generator
+          </Menu.Item>
+          {isAuthenticated ? (
+            <>
+              <Menu.Item as={NavLink} to="/account" onClick={handleSidebarHide}>
+                Account
+              </Menu.Item>
+              <Menu.Item onClick={() => { handleLogout(); handleSidebarHide();}}>
+                Log Out
+              </Menu.Item>
+            </>
+          ) : (
+            <>
+              <Menu.Item as={NavLink} to="/login" onClick={handleSidebarHide}>
+                Log In
+              </Menu.Item>
+              <Menu.Item as={NavLink} to="/register" onClick={handleSidebarHide}>
+                Register
+              </Menu.Item>
+            </>
+          )}
+        </Sidebar>
+
+        <Sidebar.Pusher dimmed={visible} style={{ minHeight: '100vh' }}>              
+            <Header 
+              isAuthenticated={isAuthenticated} 
+              onLogout={handleLogout} 
+              isMobile={isMobile}
+              visible={visible}
+              handleToggle={handleToggle}
+              handleSidebarHide={handleSidebarHide}
+              />
+            <div style={{ marginTop: `3em` }}>
+              <Routes>
+              <Route
+                  path="/"
+                  element={
+                    <>
+                      <Home isAuthenticated={isAuthenticated}/>
+                    </>
+                  }
+                />
+                <Route
+                  path="/weight-suggestions"
+                  element={
+                    <>
+                      <InputForm setResults={setResults} />
+                      {results && <Results data={results} />}
+                    </>
+                  }
+                />
+                <Route
+                  path="/meal-plan-generator"
+                  element={
+                    <>
+                      <MealPlanForm setMealPlanResults={setMealPlanResults} />
+                      {mealPlanResults && <MealPlanResults data={mealPlanResults} />}
+                    </>
+                  }
+                />
+                <Route path="/register" element={<Register />} />
+                <Route
+                  path="/login"
+                  element={<Login setIsAuthenticated={setIsAuthenticated} />}
+                />
+                <Route
+                  path="/account"
+                  element={
+                    isAuthenticated ? (
+                      <Account />
+                    ) : (
+                      <Navigate to="/login" replace />
+                    )
+                  }
+                />
+              </Routes>
+            </div>
+            <Footer />
+        </Sidebar.Pusher>
+    </Sidebar.Pushable>
+    
+    
   );
 }
 

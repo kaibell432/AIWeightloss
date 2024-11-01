@@ -1,8 +1,20 @@
 .navbar {
     background-color: #171540 !important;
+    display: flex !important;
 }
 
 .menu .item:hover {
     background-color: rgb(255, 179, 26) !important;
     color: #171540 !important;
+}
+
+.sidebar {
+    background-color: #171540 !important;
+}
+
+/* Mobile Styles */
+@media screen and (max-width: 767px) {
+    .navbar {
+        display: block;
+    }
 }
