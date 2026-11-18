@@ -1,36 +1,27 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
 import { api } from '@/lib/api';
+import { toast } from '@/lib/toast';
 import PageHeader from '@/components/PageHeader';
 import SavedMealPlans from '@/components/SavedMealPlans';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Account() {
   const [params, setParams] = useSearchParams();
   const tab = params.get('tab') === 'saved' ? 'saved' : 'profile';
+  const select = (t) => setParams(t === 'saved' ? { tab: 'saved' } : {}, { replace: true });
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
+    <div className="page">
       <PageHeader title="Your account" />
-      <Tabs value={tab} onValueChange={(v) => setParams(v === 'saved' ? { tab: 'saved' } : {}, { replace: true })}>
-        <TabsList>
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="saved">Saved meal plans</TabsTrigger>
-        </TabsList>
-        <TabsContent value="profile" className="mt-6">
-          <Profile />
-        </TabsContent>
-        <TabsContent value="saved" className="mt-6">
-          <SavedMealPlans />
-        </TabsContent>
-      </Tabs>
+      <div role="tablist" className="tabs tabs-box mb-6 w-fit">
+        <button role="tab" aria-selected={tab === 'profile'} className={`tab ${tab === 'profile' ? 'tab-active' : ''}`} onClick={() => select('profile')}>
+          Profile
+        </button>
+        <button role="tab" aria-selected={tab === 'saved'} className={`tab ${tab === 'saved' ? 'tab-active' : ''}`} onClick={() => select('saved')}>
+          Saved meal plans
+        </button>
+      </div>
+      {tab === 'profile' ? <Profile /> : <SavedMealPlans />}
     </div>
   );
 }
@@ -64,51 +55,46 @@ function Profile() {
     }
   }
 
+  if (!user) {
+    return (
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="skeleton h-16" />
+        ))}
+      </div>
+    );
+  }
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Profile</CardTitle>
-        <CardDescription>All fields except username are optional.</CardDescription>
-      </CardHeader>
-      {!user ? (
-        <CardContent className="space-y-3">
-          <Skeleton className="h-9 w-full" />
-          <Skeleton className="h-9 w-full" />
-          <Skeleton className="h-9 w-full" />
-        </CardContent>
-      ) : (
-        <form onSubmit={handleSubmit}>
-          <CardContent>
-            <FieldGroup className="gap-5">
-              <Field>
-                <FieldLabel htmlFor="username">Username</FieldLabel>
-                <Input id="username" value={user.username} disabled />
-              </Field>
-              <div className="grid gap-5 sm:grid-cols-2">
-                <Field>
-                  <FieldLabel htmlFor="firstName">First name</FieldLabel>
-                  <Input id="firstName" name="firstName" value={user.firstName || ''} onChange={onInput} maxLength={50} autoComplete="given-name" />
-                </Field>
-                <Field>
-                  <FieldLabel htmlFor="lastName">Last name</FieldLabel>
-                  <Input id="lastName" name="lastName" value={user.lastName || ''} onChange={onInput} maxLength={50} autoComplete="family-name" />
-                </Field>
-              </div>
-              <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input id="email" name="email" type="email" value={user.email} onChange={onInput} autoComplete="email" />
-                <FieldDescription>Used to email yourself saved meal plans.</FieldDescription>
-              </Field>
-            </FieldGroup>
-          </CardContent>
-          <CardFooter className="mt-6">
-            <Button type="submit" disabled={saving}>
-              {saving && <Loader2 className="animate-spin" />}
-              Save changes
-            </Button>
-          </CardFooter>
-        </form>
-      )}
-    </Card>
+    <form onSubmit={handleSubmit} className="card card-border bg-base-100">
+      <div className="card-body">
+        <p className="text-sm text-base-content/70">All fields except username are optional.</p>
+        <div className="grid gap-x-4 md:grid-cols-2 xl:grid-cols-4">
+          <fieldset className="fieldset">
+            <label className="fieldset-legend" htmlFor="username">Username</label>
+            <input id="username" className="input w-full" value={user.username} disabled />
+          </fieldset>
+          <fieldset className="fieldset">
+            <label className="fieldset-legend" htmlFor="firstName">First name</label>
+            <input id="firstName" name="firstName" className="input w-full" value={user.firstName || ''} onChange={onInput} maxLength={50} autoComplete="given-name" />
+          </fieldset>
+          <fieldset className="fieldset">
+            <label className="fieldset-legend" htmlFor="lastName">Last name</label>
+            <input id="lastName" name="lastName" className="input w-full" value={user.lastName || ''} onChange={onInput} maxLength={50} autoComplete="family-name" />
+          </fieldset>
+          <fieldset className="fieldset">
+            <label className="fieldset-legend" htmlFor="email">Email</label>
+            <input id="email" name="email" type="email" className="input w-full" value={user.email} onChange={onInput} autoComplete="email" />
+            <p className="label">Used to email yourself saved meal plans.</p>
+          </fieldset>
+        </div>
+        <div className="card-actions mt-2">
+          <button type="submit" className="btn btn-primary" disabled={saving}>
+            {saving && <span className="loading loading-spinner loading-sm" />}
+            Save changes
+          </button>
+        </div>
+      </div>
+    </form>
   );
 }

@@ -1,32 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Loader2, Mail, Salad, Trash2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { Mail, Salad, Trash2, X } from 'lucide-react';
 import { api } from '@/lib/api';
+import { toast } from '@/lib/toast';
+import Modal from '@/components/Modal';
 import MealPlanView, { planTotals } from '@/components/MealPlanView';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Skeleton } from '@/components/ui/skeleton';
 
-const formatDate = (d) => (d ? new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '');
+const formatDate = (d) =>
+  d ? new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '';
 
 export default function SavedMealPlans() {
   const [plans, setPlans] = useState(null);
@@ -69,9 +50,9 @@ export default function SavedMealPlans() {
 
   if (plans === null) {
     return (
-      <div className="grid gap-4 sm:grid-cols-2">
-        {[0, 1].map((i) => (
-          <Skeleton key={i} className="h-36 rounded-xl" />
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="skeleton h-36" />
         ))}
       </div>
     );
@@ -79,90 +60,86 @@ export default function SavedMealPlans() {
 
   if (plans.length === 0) {
     return (
-      <div className="flex flex-col items-center rounded-xl border border-dashed px-6 py-14 text-center">
-        <Salad className="size-8 text-muted-foreground" />
-        <p className="mt-3 font-medium">No saved meal plans yet</p>
-        <p className="mt-1 text-sm text-muted-foreground">Generate some plans and save the ones you like.</p>
-        <Button asChild className="mt-5">
-          <Link to="/meal-plan-generator">Open meal planner</Link>
-        </Button>
+      <div className="flex flex-col items-center rounded-box border border-dashed border-base-300 px-6 py-16 text-center">
+        <Salad className="size-10 text-base-content/40" />
+        <p className="mt-3 font-semibold">No saved meal plans yet</p>
+        <p className="mt-1 text-sm text-base-content/70">Generate some plans and save the ones you like.</p>
+        <Link to="/meal-plan-generator" className="btn btn-primary mt-5">
+          Open meal planner
+        </Link>
       </div>
     );
   }
 
   return (
     <>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         {plans.map((plan) => {
           const totals = planTotals(plan);
           return (
-            <Card key={plan._id}>
-              <CardHeader>
-                <CardTitle>{plan.focus || 'Meal plan'}</CardTitle>
-                <CardDescription>
-                  {plan.stapleFoods}
-                  <br />
-                  <span className="tabular-nums">
-                    {totals.calories.toLocaleString()} kcal · {totals.protein}g protein
-                  </span>
-                  {plan.createdAt && <> · Saved {formatDate(plan.createdAt)}</>}
-                </CardDescription>
-              </CardHeader>
-              <CardFooter className="mt-auto gap-2">
-                <Button variant="outline" size="sm" onClick={() => setViewing(plan)}>
-                  View
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="ml-auto text-destructive hover:text-destructive"
-                  onClick={() => setDeleting(plan)}
-                  aria-label={`Delete ${plan.focus || 'meal plan'}`}
-                >
-                  <Trash2 /> Delete
-                </Button>
-              </CardFooter>
-            </Card>
+            <div key={plan._id} className="card card-border bg-base-100">
+              <div className="card-body">
+                <h3 className="card-title">{plan.focus || 'Meal plan'}</h3>
+                <p className="text-sm text-base-content/70">{plan.stapleFoods}</p>
+                <p className="text-sm tabular-nums">
+                  {totals.calories.toLocaleString()} kcal · {totals.protein}g protein
+                </p>
+                {plan.createdAt && <p className="text-xs text-base-content/50">Saved {formatDate(plan.createdAt)}</p>}
+                <div className="card-actions mt-2 justify-between">
+                  <button className="btn btn-sm btn-primary btn-outline" onClick={() => setViewing(plan)}>
+                    View
+                  </button>
+                  <button
+                    className="btn btn-sm btn-ghost text-error"
+                    onClick={() => setDeleting(plan)}
+                    aria-label={`Delete ${plan.focus || 'meal plan'}`}
+                  >
+                    <Trash2 className="size-4" /> Delete
+                  </button>
+                </div>
+              </div>
+            </div>
           );
         })}
       </div>
 
-      <Dialog open={Boolean(viewing)} onOpenChange={(o) => !o && setViewing(null)}>
-        <DialogContent className="max-h-[90svh] overflow-y-auto sm:max-w-2xl">
-          {viewing && (
-            <>
-              <DialogHeader>
-                <DialogTitle>{viewing.focus || 'Meal plan'}</DialogTitle>
-                <DialogDescription>Staple foods: {viewing.stapleFoods}</DialogDescription>
-              </DialogHeader>
-              <MealPlanView plan={viewing} />
-              <DialogFooter>
-                <Button variant="outline" onClick={() => emailPlan(viewing)} disabled={emailing}>
-                  {emailing ? <Loader2 className="animate-spin" /> : <Mail />}
-                  Email to me
-                </Button>
-              </DialogFooter>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+      <Modal open={Boolean(viewing)} onClose={() => setViewing(null)} className="max-w-3xl">
+        {viewing && (
+          <>
+            <button
+              className="btn btn-sm btn-circle btn-ghost absolute top-3 right-3"
+              onClick={() => setViewing(null)}
+              aria-label="Close"
+            >
+              <X className="size-4" />
+            </button>
+            <h3 className="text-lg font-bold">{viewing.focus || 'Meal plan'}</h3>
+            <p className="mb-4 text-sm text-base-content/70">Staple foods: {viewing.stapleFoods}</p>
+            <MealPlanView plan={viewing} />
+            <div className="modal-action">
+              <button className="btn btn-outline" onClick={() => emailPlan(viewing)} disabled={emailing}>
+                {emailing ? <span className="loading loading-spinner loading-sm" /> : <Mail className="size-4" />}
+                Email to me
+              </button>
+            </div>
+          </>
+        )}
+      </Modal>
 
-      <AlertDialog open={Boolean(deleting)} onOpenChange={(o) => !o && setDeleting(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete this meal plan?</AlertDialogTitle>
-            <AlertDialogDescription>
-              &ldquo;{deleting?.focus}&rdquo; will be permanently removed from your account.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" onClick={confirmDelete}>
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <Modal open={Boolean(deleting)} onClose={() => setDeleting(null)}>
+        <h3 className="text-lg font-bold">Delete this meal plan?</h3>
+        <p className="py-3 text-base-content/70">
+          &ldquo;{deleting?.focus}&rdquo; will be permanently removed from your account.
+        </p>
+        <div className="modal-action">
+          <button className="btn btn-ghost" onClick={() => setDeleting(null)}>
+            Cancel
+          </button>
+          <button className="btn btn-error" onClick={confirmDelete}>
+            Delete
+          </button>
+        </div>
+      </Modal>
     </>
   );
 }

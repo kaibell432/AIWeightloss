@@ -1,23 +1,27 @@
-import { Field, FieldLabel } from '@/components/ui/field';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
-// Labeled shadcn Select. `options` is [{ value, label }].
-export default function SelectField({ id, label, value, onChange, options, placeholder = 'Select…', required }) {
+// Labeled native <select> styled by daisyUI. `options` is [{ value, label }].
+export default function SelectField({ id, label, value, onChange, options, placeholder = 'Select…', required = true }) {
   return (
-    <Field>
-      <FieldLabel htmlFor={id}>{label}</FieldLabel>
-      <Select value={value} onValueChange={onChange} required={required} name={id}>
-        <SelectTrigger id={id} className="w-full">
-          <SelectValue placeholder={placeholder} />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((o) => (
-            <SelectItem key={o.value} value={o.value}>
-              {o.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </Field>
+    <fieldset className="fieldset">
+      <label className="fieldset-legend" htmlFor={id}>
+        {label}
+      </label>
+      <select
+        id={id}
+        name={id}
+        className="select w-full"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        required={required}
+      >
+        <option value="" disabled>
+          {placeholder}
+        </option>
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
+    </fieldset>
   );
 }
