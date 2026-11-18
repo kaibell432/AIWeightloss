@@ -1,135 +1,132 @@
 const express = require('express');
-const router = express.Router();
 const bcrypt = require('bcrypt');
+const rateLimit = require('express-rate-limit');
 const User = require('../models/User');
+const { isAuthenticated } = require('../middleware/auth');
 
-const isAuthenticated = (req, res, next) => {
-    if (req.session.userId) {
-        return next();
-    }
-    res.status(401).json({ message: 'Unauthorized' });
-};
+const router = express.Router();
 
-// Registration Route
-router.post('/register', async (req, res) => {
-    try {
-      let { username, password } = req.body;
-  
-      if (!username || !password) {
-        return res.status(400).json({ message: 'Username and password are required.' });
-      }
-  
-      username = username.toLowerCase();
-      
-      // Check if user exists already
-      const userExists = await User.findOne({ username });
-      if (userExists) {
-        return res.status(400).json({ message: 'Username already taken' });
-      }
-  
-      // Encrypt Pass
-      const saltRounds = 10;
-      const hashedPass = await bcrypt.hash(password, saltRounds);
-  
-      // Create user
-      const newUserData = new User({
-        username,
-        password: hashedPass,
-      });
-  
-      const newUser = new User(newUserData);
-      await newUser.save();
-  
-      // Auto login after registration
-      req.session.userId = newUser._id;
-  
-      res.status(201).json({ message: 'User registered successfully' });
-    } catch (error) {
-      console.error('Registration error:', error);
-      res.status(500).json({ message: 'Server error during registration' });
-    }
-  });
-  
-  // Login Route
-  router.post('/login', async (req, res) => {
-    try {
-      console.log('req.body', req.body);
-      let {username, password} = req.body;
-  
-      if (!username || !password) {
-        return res.status(400).json({ message: 'Username and password are required' });
-      }
-  
-      username = username.toLowerCase();
-  
-      // Find user
-      const user = await User.findOne({ username });
-      if (!user) {
-        return res.status(400).json({ message: 'Invalid username or password' });
-      }
-  
-      // Compare passwords
-      const passwordMatch = await bcrypt.compare(password, user.password);
-      if (!passwordMatch) {
-        return res.status(400).json({ message: 'Invalid username or password' });
-      }
-  
-      // Set user session
-      req.session.userId = user._id;
-  
-      res.json({ message: 'Login successful' });
-    } catch (error) {
-      console.error('Login error:', error);
-      res.status(500).json({ message: 'Server error during login' });
-    }
-  });
-  
-  // Logout Route
-  router.post('/logout', (req, res) => {
-    req.session.destroy((err) => {
-      if (err) {
-        console.error('Logout error:', err);
-        return res.status(500).json({ message: 'Server error during logout' });
-      }
-      res.clearCookie('connect.sid');
-      res.json({ message: 'Logout successful' });
+// Slow down password guessing.
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 20,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { message: 'Too many attempts. Please wait a few minutes and try again.' },
+});
+
+const USERNAME_RE = /^[a-z0-9_.-]{3,30}$/;
+
+// Start a fresh session on login/registration (prevents session fixation).
+function startSession(req, userId) {
+  return new Promise((resolve, reject) => {
+    req.session.regenerate((err) => {
+      if (err) return reject(err);
+      req.session.userId = userId;
+      req.session.save((saveErr) => (saveErr ? reject(saveErr) : resolve()));
     });
   });
+}
 
-  // Get user info
-  router.get('/user', isAuthenticated, async (req, res) => {
-    try {
-        const user = await User.findById(req.session.userId).select('-password');
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-        res.json({ user });
-    } catch (error) {
-        console.error('Error fetching user info:', error);
-        res.status(500).json({ message: 'Server fetching user info' });
+router.get('/checkAuth', (req, res) => {
+  res.json({ isAuthenticated: Boolean(req.session?.userId) });
+});
+
+router.post('/register', authLimiter, async (req, res) => {
+  try {
+    const username = String(req.body?.username || '').trim().toLowerCase();
+    const password = String(req.body?.password || '');
+
+    if (!USERNAME_RE.test(username)) {
+      return res.status(400).json({ message: 'Username must be 3-30 characters: letters, numbers, dot, dash or underscore.' });
     }
-  });
-
-  // Update user info
-  router.put('/user', isAuthenticated, async (req, res) => {
-    try {
-        const { email, firstName, lastName } = req.body;
-
-        const updatedUser = await User.findByIdAndUpdate(
-            req.session.userId,
-            { email, firstName, lastName },
-            { new: true, runValidators: true, select: '-password' }
-        );
-
-        if (!updatedUser) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        res.json({ user: updatedUser, message: 'User information updated successfully!' });
-    } catch (error) {
-        console.error('Error updated user info:', error);
-        res.status(500).json({ message: 'Server error updating user info' });
+    if (password.length < 8) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters.' });
     }
-  });
+    if (await User.exists({ username })) {
+      return res.status(409).json({ message: 'That username is already taken.' });
+    }
 
-  module.exports = router;
+    const user = await User.create({ username, password: await bcrypt.hash(password, 12) });
+    await startSession(req, user._id);
+    res.status(201).json({ message: 'Account created!' });
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ message: 'Server error during registration.' });
+  }
+});
+
+router.post('/login', authLimiter, async (req, res) => {
+  try {
+    const username = String(req.body?.username || '').trim().toLowerCase();
+    const password = String(req.body?.password || '');
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Username and password are required.' });
+    }
+
+    const user = await User.findOne({ username });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ message: 'Invalid username or password.' });
+    }
+
+    await startSession(req, user._id);
+    res.json({ message: 'Welcome back!' });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Server error during login.' });
+  }
+});
+
+router.post('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Logout error:', err);
+      return res.status(500).json({ message: 'Server error during logout.' });
+    }
+    res.clearCookie('connect.sid');
+    res.json({ message: 'Logged out.' });
+  });
+});
+
+router.get('/user', isAuthenticated, async (req, res) => {
+  try {
+    const user = await User.findById(req.session.userId).select('-password');
+    if (!user) return res.status(404).json({ message: 'User not found.' });
+    res.json({ user });
+  } catch (error) {
+    console.error('Error fetching user info:', error);
+    res.status(500).json({ message: 'Server error fetching user info.' });
+  }
+});
+
+router.put('/user', isAuthenticated, async (req, res) => {
+  try {
+    const firstName = String(req.body?.firstName ?? '').trim().slice(0, 50);
+    const lastName = String(req.body?.lastName ?? '').trim().slice(0, 50);
+    const email = String(req.body?.email ?? '').trim().toLowerCase();
+
+    // An empty email is removed rather than stored as '' (see models/User.js).
+    const update = email
+      ? { $set: { firstName, lastName, email } }
+      : { $set: { firstName, lastName }, $unset: { email: 1 } };
+
+    const user = await User.findByIdAndUpdate(req.session.userId, update, {
+      new: true,
+      runValidators: true,
+    }).select('-password');
+
+    if (!user) return res.status(404).json({ message: 'User not found.' });
+    res.json({ user, message: 'Account updated.' });
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.status(409).json({ message: 'That email is already used by another account.' });
+    }
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ message: Object.values(error.errors)[0].message });
+    }
+    console.error('Error updating user info:', error);
+    res.status(500).json({ message: 'Server error updating user info.' });
+  }
+});
+
+module.exports = router;
