@@ -1,20 +1,43 @@
+import { useEffect, useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
-import { useTheme } from 'next-themes';
-import { Button } from '@/components/ui/button';
+
+const THEMES = { light: 'emerald', dark: 'forest' };
+const KEY = 'theme';
+
+function initialMode() {
+  try {
+    const saved = localStorage.getItem(KEY);
+    if (saved === 'light' || saved === 'dark') return saved;
+  } catch {
+    /* storage unavailable */
+  }
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
 
 export default function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme();
-  const isDark = resolvedTheme === 'dark';
+  const [mode, setMode] = useState(initialMode);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', THEMES[mode]);
+  }, [mode]);
+
+  const toggle = () => {
+    const next = mode === 'dark' ? 'light' : 'dark';
+    setMode(next);
+    try {
+      localStorage.setItem(KEY, next);
+    } catch {
+      /* storage unavailable */
+    }
+  };
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
-      onClick={() => setTheme(isDark ? 'light' : 'dark')}
+    <button
+      className="btn btn-ghost btn-square btn-sm"
+      onClick={toggle}
+      aria-label={mode === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
     >
-      <Sun className="hidden dark:block" />
-      <Moon className="dark:hidden" />
-    </Button>
+      {mode === 'dark' ? <Sun className="size-5" /> : <Moon className="size-5" />}
+    </button>
   );
 }

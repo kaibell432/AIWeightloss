@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
 
 // Loading state for AI calls, with an elapsed timer so long waits feel alive.
-export default function GeneratingCard({ message, className }) {
+export default function GeneratingCard({ message, className = '' }) {
   const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
@@ -14,25 +10,25 @@ export default function GeneratingCard({ message, className }) {
   }, []);
 
   return (
-    <Card className={cn(className)} aria-live="polite" aria-busy="true">
-      <CardContent className="space-y-4">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Loader2 className="size-4 animate-spin text-primary" />
+    <div className={`card card-border bg-base-100 ${className}`} aria-live="polite" aria-busy="true">
+      <div className="card-body gap-4">
+        <div className="flex items-center gap-3 text-base-content/70">
+          <span className="loading loading-spinner text-primary" />
           <span>{message}</span>
           <span className="ml-auto tabular-nums">{seconds}s</span>
         </div>
         {seconds > 30 && (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-base-content/70">
             The AI service is busy right now, so we're trying a backup model. Hang tight.
           </p>
         )}
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-3/4" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-5/6" />
-          <Skeleton className="h-4 w-2/3" />
+        <div className="space-y-3">
+          <div className="skeleton h-4 w-3/4" />
+          <div className="skeleton h-4 w-full" />
+          <div className="skeleton h-4 w-5/6" />
+          <div className="skeleton h-4 w-2/3" />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

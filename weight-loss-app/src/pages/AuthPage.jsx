@@ -1,12 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
 import { api } from '@/lib/api';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
+import { toast } from '@/lib/toast';
 
 const COPY = {
   login: {
@@ -56,59 +51,58 @@ export default function AuthPage({ mode, onAuthenticated }) {
   }
 
   return (
-    <div className="flex justify-center px-4 py-16">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle className="text-xl">{copy.title}</CardTitle>
-          <CardDescription>{copy.description}</CardDescription>
-        </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent>
-            <FieldGroup className="gap-4">
-              <Field>
-                <FieldLabel htmlFor="username">Username</FieldLabel>
-                <Input
-                  id="username"
-                  name="username"
-                  autoComplete="username"
-                  autoCapitalize="none"
-                  value={form.username}
-                  onChange={onInput}
-                  required
-                  autoFocus
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="password">Password</FieldLabel>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                  minLength={mode === 'register' ? 8 : undefined}
-                  value={form.password}
-                  onChange={onInput}
-                  required
-                />
-                {mode === 'register' && <FieldDescription>At least 8 characters.</FieldDescription>}
-              </Field>
-              {error && <FieldError>{error}</FieldError>}
-            </FieldGroup>
-          </CardContent>
-          <CardFooter className="mt-6 flex-col gap-4">
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading && <Loader2 className="animate-spin" />}
-              {copy.submit}
-            </Button>
-            <p className="text-sm text-muted-foreground">
-              {copy.switchText}{' '}
-              <Link to={copy.switchLink} state={location.state} className="text-primary underline-offset-4 hover:underline">
-                {copy.switchLabel}
-              </Link>
-            </p>
-          </CardFooter>
-        </form>
-      </Card>
+    <div className="page flex justify-center py-16">
+      <form onSubmit={handleSubmit} className="card card-border w-full max-w-md bg-base-100">
+        <div className="card-body">
+          <h1 className="card-title text-2xl">{copy.title}</h1>
+          <p className="text-base-content/70">{copy.description}</p>
+
+          <fieldset className="fieldset mt-2">
+            <label className="fieldset-legend" htmlFor="username">Username</label>
+            <input
+              id="username"
+              name="username"
+              className="input w-full"
+              autoComplete="username"
+              autoCapitalize="none"
+              value={form.username}
+              onChange={onInput}
+              required
+              autoFocus
+            />
+            <label className="fieldset-legend" htmlFor="password">Password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              className="input w-full"
+              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+              minLength={mode === 'register' ? 8 : undefined}
+              value={form.password}
+              onChange={onInput}
+              required
+            />
+            {mode === 'register' && <p className="label">At least 8 characters.</p>}
+          </fieldset>
+
+          {error && (
+            <div role="alert" className="alert alert-error alert-soft py-2 text-sm">
+              {error}
+            </div>
+          )}
+
+          <button type="submit" className="btn btn-primary mt-2 w-full" disabled={loading}>
+            {loading && <span className="loading loading-spinner loading-sm" />}
+            {copy.submit}
+          </button>
+          <p className="mt-2 text-center text-sm text-base-content/70">
+            {copy.switchText}{' '}
+            <Link to={copy.switchLink} state={location.state} className="link link-primary">
+              {copy.switchLabel}
+            </Link>
+          </p>
+        </div>
+      </form>
     </div>
   );
 }

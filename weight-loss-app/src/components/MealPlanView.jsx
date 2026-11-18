@@ -1,6 +1,4 @@
 import { ExternalLink } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 
 const sumProtein = (items) => items.reduce((s, i) => s + (Number(i.protein) || 0), 0);
 
@@ -26,31 +24,32 @@ export function goalStatus(calories, goal) {
 }
 
 export function GoalBadge({ status }) {
-  if (status === 'over') return <Badge variant="destructive">Over goal</Badge>;
-  if (status === 'under') return <Badge variant="secondary">Under goal</Badge>;
+  if (status === 'over') return <span className="badge badge-error badge-soft">Over goal</span>;
+  if (status === 'under') return <span className="badge badge-warning badge-soft">Under goal</span>;
+  if (status === 'ok') return <span className="badge badge-success badge-soft">On target</span>;
   return null;
 }
 
 export default function MealPlanView({ plan }) {
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {plan.meals.map((meal, i) => {
         const protein = meal.protein ?? sumProtein(meal.items);
         return (
           <section key={i}>
-            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-              <h4 className="font-medium">
-                <span className="text-muted-foreground">{meal.mealType}:</span> {meal.mealName}
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3">
+              <h4 className="font-semibold">
+                <span className="text-base-content/60">{meal.mealType}:</span> {meal.mealName}
               </h4>
-              <p className="text-sm tabular-nums text-muted-foreground">
+              <span className="text-sm tabular-nums text-base-content/60">
                 {meal.calories} kcal · {protein}g protein
-              </p>
+              </span>
             </div>
-            <ul className="mt-2 divide-y rounded-lg border text-sm">
+            <ul className="list mt-1 rounded-box bg-base-200/60 text-sm">
               {meal.items.map((item, j) => (
-                <li key={j} className="flex items-center justify-between gap-4 px-3 py-2">
-                  <span>{item.item}</span>
-                  <span className="shrink-0 tabular-nums text-muted-foreground">
+                <li key={j} className="list-row py-2">
+                  <span className="list-col-grow">{item.item}</span>
+                  <span className="tabular-nums text-base-content/60">
                     {item.calories} kcal · {item.protein}g
                   </span>
                 </li>
@@ -61,26 +60,24 @@ export default function MealPlanView({ plan }) {
       })}
 
       {plan.recipes?.length > 0 && (
-        <>
-          <Separator />
-          <section>
-            <h4 className="text-sm font-medium">Dinner recipe ideas</h4>
-            <ul className="mt-2 space-y-1 text-sm">
-              {plan.recipes.map((r) => (
-                <li key={r.title}>
-                  <a
-                    href={r.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-primary underline-offset-4 hover:underline"
-                  >
-                    {r.title} <ExternalLink className="size-3" />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </section>
-        </>
+        <section>
+          <div className="divider my-1" />
+          <h4 className="text-sm font-semibold">Dinner recipe ideas</h4>
+          <ul className="mt-1 space-y-1 text-sm">
+            {plan.recipes.map((r) => (
+              <li key={r.title}>
+                <a
+                  href={r.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="link link-primary inline-flex items-center gap-1"
+                >
+                  {r.title} <ExternalLink className="size-3" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
     </div>
   );

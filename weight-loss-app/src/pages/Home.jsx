@@ -1,7 +1,5 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Bookmark, ClipboardList, Salad, Scale, Sparkles } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const FEATURES = [
   {
@@ -29,66 +27,62 @@ const STEPS = [
 export default function Home({ isAuthenticated }) {
   return (
     <>
-      <section className="border-b bg-gradient-to-b from-primary/10 to-background">
-        <div className="mx-auto max-w-3xl px-4 py-20 text-center sm:py-28">
-          <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-            Reach your weight goals with a plan built for you
-          </h1>
-          <p className="mx-auto mt-4 max-w-xl text-lg text-pretty text-muted-foreground">
-            Personalized weight management advice and meal plans, generated in seconds.
-          </p>
-          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <Button asChild size="lg" className="h-11 px-6">
-              <Link to="/weight-suggestions">
-                Get started <ArrowRight data-icon="inline-end" />
+      <section className="hero bg-base-200 px-4 py-20 sm:px-6 sm:py-28 lg:px-10">
+        <div className="hero-content max-w-4xl text-center">
+          <div>
+            <h1 className="text-4xl font-bold text-balance sm:text-6xl">
+              Reach your weight goals with a plan built for you
+            </h1>
+            <p className="mx-auto mt-5 max-w-2xl text-lg text-base-content/70">
+              Personalized weight management advice and meal plans, generated in seconds.
+            </p>
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+              <Link to="/weight-suggestions" className="btn btn-primary btn-lg">
+                Get started <ArrowRight className="size-5" />
               </Link>
-            </Button>
-            {isAuthenticated === false && (
-              <Button asChild size="lg" variant="outline" className="h-11 px-6">
-                <Link to="/register">Create a free account</Link>
-              </Button>
-            )}
+              {isAuthenticated === false && (
+                <Link to="/register" className="btn btn-outline btn-lg">
+                  Create a free account
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-5xl px-4 py-16">
+      <section className="page py-14">
         <div className="grid gap-6 md:grid-cols-2">
           {FEATURES.map(({ icon: Icon, title, body, to, cta }) => (
-            <Card key={title}>
-              <CardHeader>
-                <div className="mb-2 flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <Icon className="size-5" />
-                </div>
-                <CardTitle>{title}</CardTitle>
-                <CardDescription>{body}</CardDescription>
-                <Button asChild variant="link" className="mt-2 w-fit px-0">
-                  <Link to={to}>
-                    {cta} <ArrowRight data-icon="inline-end" />
+            <div key={title} className="card card-border bg-base-100">
+              <div className="card-body">
+                <Icon className="size-8 text-primary" />
+                <h2 className="card-title mt-2">{title}</h2>
+                <p className="text-base-content/70">{body}</p>
+                <div className="card-actions mt-2">
+                  <Link to={to} className="btn btn-primary btn-outline btn-sm">
+                    {cta} <ArrowRight className="size-4" />
                   </Link>
-                </Button>
-              </CardHeader>
-            </Card>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </section>
 
-      <section className="border-t bg-muted/40">
-        <div className="mx-auto max-w-5xl px-4 py-16">
-          <h2 className="text-center text-2xl font-semibold tracking-tight">How it works</h2>
-          <ol className="mt-10 grid gap-8 sm:grid-cols-3">
-            {STEPS.map(({ icon: Icon, title, body }, i) => (
-              <li key={title} className="text-center">
-                <div className="mx-auto flex size-12 items-center justify-center rounded-full border bg-background">
-                  <Icon className="size-5 text-primary" />
+      <section className="bg-base-200">
+        <div className="page py-14">
+          <h2 className="text-center text-2xl font-bold">How it works</h2>
+          <ul className="steps steps-vertical mt-8 w-full sm:steps-horizontal">
+            {STEPS.map(({ icon: Icon, title, body }) => (
+              <li key={title} className="step step-primary">
+                <div className="px-4 py-2 text-left sm:text-center">
+                  <Icon className="mb-1 inline size-5 text-primary" />
+                  <h3 className="font-semibold">{title}</h3>
+                  <p className="text-sm text-base-content/70">{body}</p>
                 </div>
-                <h3 className="mt-4 font-medium">
-                  {i + 1}. {title}
-                </h3>
-                <p className="mt-1 text-sm text-muted-foreground">{body}</p>
               </li>
             ))}
-          </ol>
+          </ul>
         </div>
       </section>
     </>

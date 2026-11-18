@@ -1,19 +1,13 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Bookmark, Check, Info, Loader2, Sparkles } from 'lucide-react';
-import { toast } from 'sonner';
+import { Bookmark, Check, Info, Sparkles } from 'lucide-react';
 import { api } from '@/lib/api';
+import { toast } from '@/lib/toast';
 import { DIETARY_OPTIONS } from '@/lib/options';
 import PageHeader from '@/components/PageHeader';
 import SelectField from '@/components/SelectField';
 import GeneratingCard from '@/components/GeneratingCard';
 import MealPlanView, { GoalBadge, goalStatus, parseCalorieGoal, planTotals } from '@/components/MealPlanView';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
 
 export default function MealPlanner({ result, setResult, isAuthenticated }) {
   const location = useLocation();
@@ -33,10 +27,6 @@ export default function MealPlanner({ result, setResult, isAuthenticated }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!form.dietaryRestrictions) {
-      toast.error('Please choose your dietary restrictions.');
-      return;
-    }
     setLoading(true);
     try {
       const data = await api('/getMealPlan', {
@@ -78,77 +68,79 @@ export default function MealPlanner({ result, setResult, isAuthenticated }) {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
+    <div className="page">
       <PageHeader
         title="Meal planner"
         description="Choose up to three staple foods and get seven different day plans that hit your calorie goal."
       />
 
-      <Card>
-        <form onSubmit={handleSubmit}>
-          <CardContent>
-            <FieldGroup className="gap-5">
-              <Field>
-                <FieldLabel htmlFor="dailyCals">Daily calorie goal</FieldLabel>
-                <Input
-                  id="dailyCals"
-                  name="dailyCals"
-                  placeholder="e.g. 1800 or 1800-2000"
-                  value={form.dailyCals}
+      <form onSubmit={handleSubmit} className="card card-border bg-base-100">
+        <div className="card-body">
+          <div className="grid gap-x-4 md:grid-cols-2 xl:grid-cols-12">
+            <fieldset className="fieldset xl:col-span-3">
+              <label className="fieldset-legend" htmlFor="dailyCals">Daily calorie goal</label>
+              <input
+                id="dailyCals"
+                name="dailyCals"
+                className="input w-full"
+                placeholder="e.g. 1800 or 1800-2000"
+                value={form.dailyCals}
+                onChange={onInput}
+                pattern=".*\d{3,5}.*"
+                maxLength={30}
+                required
+              />
+              <p className="label">
+                Not sure?{' '}
+                <Link to="/weight-suggestions" className="link link-primary">
+                  Get a personalized target
+                </Link>
+              </p>
+            </fieldset>
+
+            <fieldset className="fieldset md:col-span-2 xl:col-span-6">
+              <label className="fieldset-legend" htmlFor="stapleFood1">Staple foods (up to 3)</label>
+              <div className="grid gap-2 sm:grid-cols-3">
+                <input id="stapleFood1" name="stapleFood1" className="input w-full" placeholder="e.g. chicken" value={form.stapleFood1} onChange={onInput} maxLength={60} required />
+                <input name="stapleFood2" className="input w-full" aria-label="Staple food 2" placeholder="optional" value={form.stapleFood2} onChange={onInput} maxLength={60} />
+                <input name="stapleFood3" className="input w-full" aria-label="Staple food 3" placeholder="optional" value={form.stapleFood3} onChange={onInput} maxLength={60} />
+              </div>
+            </fieldset>
+
+            <div className="md:col-start-2 md:row-start-1 xl:col-span-3 xl:col-start-auto xl:row-start-auto">
+              <SelectField
+                id="dietaryRestrictions"
+                label="Dietary restrictions"
+                value={form.dietaryRestrictions}
+                onChange={(v) => setForm((f) => ({ ...f, dietaryRestrictions: v }))}
+                options={DIETARY_OPTIONS}
+              />
+              {form.dietaryRestrictions === 'Other' && (
+                <input
+                  name="dietaryRestrictionsOther"
+                  className="input mt-1 w-full"
+                  placeholder="e.g. nut allergy"
+                  aria-label="Other dietary restrictions"
+                  value={form.dietaryRestrictionsOther}
                   onChange={onInput}
-                  pattern=".*\d{3,5}.*"
-                  maxLength={30}
+                  maxLength={120}
                   required
                 />
-                <FieldDescription>
-                  Not sure? <Link to="/weight-suggestions" className="text-primary underline-offset-4 hover:underline">Get a personalized target</Link>.
-                </FieldDescription>
-              </Field>
+              )}
+            </div>
+          </div>
 
-              <Field>
-                <FieldLabel htmlFor="stapleFood1">Staple foods</FieldLabel>
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <Input id="stapleFood1" name="stapleFood1" placeholder="e.g. chicken" value={form.stapleFood1} onChange={onInput} maxLength={60} required />
-                  <Input name="stapleFood2" aria-label="Staple food 2" placeholder="optional" value={form.stapleFood2} onChange={onInput} maxLength={60} />
-                  <Input name="stapleFood3" aria-label="Staple food 3" placeholder="optional" value={form.stapleFood3} onChange={onInput} maxLength={60} />
-                </div>
-              </Field>
-
-              <div className="space-y-3">
-                <SelectField
-                  id="dietaryRestrictions"
-                  label="Dietary restrictions"
-                  value={form.dietaryRestrictions}
-                  onChange={(v) => setForm((f) => ({ ...f, dietaryRestrictions: v }))}
-                  options={DIETARY_OPTIONS}
-                />
-                {form.dietaryRestrictions === 'Other' && (
-                  <Input
-                    name="dietaryRestrictionsOther"
-                    placeholder="e.g. nut allergy, low FODMAP"
-                    aria-label="Other dietary restrictions"
-                    value={form.dietaryRestrictionsOther}
-                    onChange={onInput}
-                    maxLength={120}
-                    required
-                  />
-                )}
-              </div>
-            </FieldGroup>
-          </CardContent>
-          <CardFooter className="mt-6">
-            <Button type="submit" size="lg" disabled={loading} className="w-full sm:w-auto">
-              {loading ? <Loader2 className="animate-spin" /> : <Sparkles />}
+          <div className="card-actions mt-2">
+            <button type="submit" className="btn btn-primary w-full sm:w-auto" disabled={loading}>
+              {loading ? <span className="loading loading-spinner loading-sm" /> : <Sparkles className="size-4" />}
               {loading ? 'Generating…' : 'Generate meal plans'}
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
+            </button>
+          </div>
+        </div>
+      </form>
 
       <div id="results" className="scroll-mt-20">
-        {loading && (
-          <GeneratingCard className="mt-8" message="Building 7 meal plans. This can take 15–60 seconds." />
-        )}
+        {loading && <GeneratingCard className="mt-6" message="Building 7 meal plans. This can take 15–60 seconds." />}
         {!loading && result && <Results result={result} saved={saved} onSave={handleSave} />}
       </div>
     </div>
@@ -159,56 +151,62 @@ function Results({ result, saved, onSave }) {
   const { mealPlans, stapleFoodConcerns, varietyInStapleFoods, notes, goal } = result;
 
   return (
-    <div className="mt-10 space-y-4">
-      <h2 className="text-xl font-semibold tracking-tight">Your meal plans</h2>
+    <div className="mt-8 space-y-4">
+      <h2 className="text-2xl font-bold">Your meal plans</h2>
 
       {(stapleFoodConcerns || varietyInStapleFoods) && (
-        <Alert>
-          <Info />
-          <AlertTitle>About your staple foods</AlertTitle>
-          <AlertDescription className="space-y-1">
+        <div role="alert" className="alert alert-info alert-soft items-start">
+          <Info className="size-5 shrink-0" />
+          <div className="space-y-1">
+            <p className="font-semibold">About your staple foods</p>
             {stapleFoodConcerns && <p>{stapleFoodConcerns}</p>}
             {varietyInStapleFoods && <p>{varietyInStapleFoods}</p>}
-          </AlertDescription>
-        </Alert>
+          </div>
+        </div>
       )}
 
-      <Accordion type="single" collapsible defaultValue="plan-1" className="rounded-lg border">
+      <div className="grid items-start gap-4 md:grid-cols-2 2xl:grid-cols-3">
         {mealPlans.map((plan) => {
           const totals = planTotals(plan);
           const state = saved[plan.mealPlanNumber];
           return (
-            <AccordionItem key={plan.mealPlanNumber} value={`plan-${plan.mealPlanNumber}`} className="px-4">
-              <AccordionTrigger className="hover:no-underline">
-                <div className="flex flex-1 flex-wrap items-center gap-x-3 gap-y-1 text-left">
-                  <span className="font-medium">
+            <div key={plan.mealPlanNumber} className="card card-border bg-base-100">
+              <div className="card-body">
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <h3 className="card-title">
                     {plan.mealPlanNumber}. {plan.focus}
-                  </span>
-                  <span className="text-sm font-normal tabular-nums text-muted-foreground">
-                    {totals.calories.toLocaleString()} kcal · {totals.protein}g protein
-                  </span>
+                  </h3>
                   <GoalBadge status={goalStatus(totals.calories, goal)} />
                 </div>
-              </AccordionTrigger>
-              <AccordionContent className="pb-5">
-                <MealPlanView plan={plan} />
-                <div className="mt-5 flex justify-end">
-                  <Button
-                    variant={state === 'saved' ? 'secondary' : 'outline'}
+                <p className="text-sm tabular-nums text-base-content/70">
+                  {totals.calories.toLocaleString()} kcal · {totals.protein}g protein
+                </p>
+                <div className="mt-2">
+                  <MealPlanView plan={plan} />
+                </div>
+                <div className="card-actions mt-3 justify-end">
+                  <button
+                    className={`btn btn-sm ${state === 'saved' ? 'btn-success btn-soft' : 'btn-primary btn-outline'}`}
                     disabled={Boolean(state)}
                     onClick={() => onSave(plan)}
                   >
-                    {state === 'saving' ? <Loader2 className="animate-spin" /> : state === 'saved' ? <Check /> : <Bookmark />}
+                    {state === 'saving' ? (
+                      <span className="loading loading-spinner loading-xs" />
+                    ) : state === 'saved' ? (
+                      <Check className="size-4" />
+                    ) : (
+                      <Bookmark className="size-4" />
+                    )}
                     {state === 'saved' ? 'Saved' : 'Save plan'}
-                  </Button>
+                  </button>
                 </div>
-              </AccordionContent>
-            </AccordionItem>
+              </div>
+            </div>
           );
         })}
-      </Accordion>
+      </div>
 
-      {notes && <p className="text-xs text-muted-foreground">{notes}</p>}
+      {notes && <p className="text-xs text-base-content/60">{notes}</p>}
     </div>
   );
 }

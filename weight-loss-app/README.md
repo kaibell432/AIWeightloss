@@ -2,7 +2,7 @@
 
 AI-powered weight management suggestions and meal plans.
 
-- **Frontend:** React 19, Vite, Tailwind CSS 4, [shadcn/ui](https://ui.shadcn.com)
+- **Frontend:** React 19, Vite, Tailwind CSS 4, [daisyUI 5](https://daisyui.com), [Lucide](https://lucide.dev) icons
 - **Backend:** Express, MongoDB (Mongoose), sessions stored in MongoDB
 - **AI:** Google Gemini via `@google/genai`, with structured JSON output
 - **Hosting:** Render free tier + MongoDB Atlas free tier
@@ -51,13 +51,12 @@ rather than model-generated URLs, which are often invented.
 ## Project layout
 
 ```
-index.html, vite.config.js   Vite entry + config
+index.html, vite.config.js   Vite entry + config (daisyUI themes: src/index.css)
 scripts/vite.mjs             Vite launcher (Windows path fix)
 src/
   pages/                     Route components
   components/                App components
-  components/ui/             shadcn/ui components (add more: npx shadcn@latest add <name>)
-  lib/                       API client, form options, utils
+  lib/                       API client, toasts, form options
 server/
   index.js                   Express app: sessions, API routes, serves build/
   lib/gemini.js              Gemini client with model fallback
