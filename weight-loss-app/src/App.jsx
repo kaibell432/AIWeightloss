@@ -1,6 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
-import { toast } from '@/lib/toast';
+import { toast } from '@/components/ui/toast';
 import { api } from '@/lib/api';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
@@ -44,7 +44,7 @@ export default function App() {
     isAuthenticated === null ? null : isAuthenticated ? element : <Navigate to="/login" replace />;
 
   return (
-    <div className="flex min-h-svh flex-col bg-base-100">
+    <div className="flex min-h-svh flex-col">
       <SiteHeader isAuthenticated={isAuthenticated} onLogout={handleLogout} />
       <ServerWaking ready={isAuthenticated !== null} />
       <main className="flex-1">

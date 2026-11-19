@@ -1,9 +1,9 @@
 export default function SiteFooter() {
   return (
-    <footer className="footer border-t border-base-300 bg-base-200 px-4 py-6 text-sm text-base-content/70 sm:footer-horizontal sm:px-6 lg:px-10">
+    <footer className="page mt-24 flex flex-col gap-2 border-t border-rule py-8 text-sm text-muted sm:flex-row sm:justify-between">
       <p>&copy; {new Date().getFullYear()} Weight Loss App</p>
-      <p className="sm:justify-self-end">
-        AI-generated guidance is not medical advice. Consult a healthcare professional before major changes.
+      <p className="max-w-xl sm:text-right">
+        AI-generated guidance is not medical advice. Check with a healthcare professional before making big changes.
       </p>
     </footer>
   );

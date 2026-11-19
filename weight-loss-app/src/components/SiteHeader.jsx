@@ -1,100 +1,99 @@
 import { Link, NavLink } from 'react-router-dom';
-import { Leaf, Menu } from 'lucide-react';
-import ThemeToggle from '@/components/ThemeToggle';
+import { DropdownMenu } from 'radix-ui';
+import { Menu } from 'lucide-react';
+import { cx } from '@/lib/cx';
+import Logo from '@/components/Logo';
+import { Button } from '@/components/ui/button';
 
 const NAV = [
-  { to: '/weight-suggestions', label: 'Weight Suggestions' },
-  { to: '/meal-plan-generator', label: 'Meal Planner' },
+  { to: '/weight-suggestions', label: 'Weight suggestions' },
+  { to: '/meal-plan-generator', label: 'Meal planner' },
 ];
 
-const navClass = ({ isActive }) => (isActive ? 'menu-active' : '');
+const linkClass = ({ isActive }) =>
+  cx(
+    'relative rounded-full px-3.5 py-2 text-[0.95rem] font-semibold transition-colors duration-200',
+    isActive ? 'bg-well text-ink' : 'text-muted hover:text-ink'
+  );
 
-// Closes the mobile dropdown after a choice (daisyUI dropdowns open on focus).
-const blur = () => document.activeElement?.blur();
+const menuItem =
+  'flex cursor-pointer items-center rounded-xl px-3 py-2.5 text-[0.95rem] font-semibold outline-none data-[highlighted]:bg-well';
 
+// Wordmark left, plain links right (per the direction contract).
 export default function SiteHeader({ isAuthenticated, onLogout }) {
-  const authItems =
-    isAuthenticated === null ? null : isAuthenticated ? (
-      <>
-        <li>
-          <NavLink to="/account" className={navClass} onClick={blur}>
-            Account
-          </NavLink>
-        </li>
-        <li>
-          <button
-            onClick={() => {
-              blur();
-              onLogout();
-            }}
-          >
-            Log out
-          </button>
-        </li>
-      </>
-    ) : (
-      <>
-        <li>
-          <NavLink to="/login" className={navClass} onClick={blur}>
-            Log in
-          </NavLink>
-        </li>
-      </>
-    );
-
   return (
-    <header className="navbar sticky top-0 z-40 border-b border-base-300 bg-base-100/90 px-4 backdrop-blur sm:px-6 lg:px-10">
-      <div className="navbar-start gap-2">
-        <div className="dropdown lg:hidden">
-          <button tabIndex={0} className="btn btn-ghost btn-square btn-sm" aria-label="Open menu">
-            <Menu className="size-5" />
-          </button>
-          <ul tabIndex={0} className="menu dropdown-content z-50 mt-3 w-56 rounded-box bg-base-100 p-2 shadow-lg">
-            {NAV.map((n) => (
-              <li key={n.to}>
-                <NavLink to={n.to} className={navClass} onClick={blur}>
-                  {n.label}
-                </NavLink>
-              </li>
-            ))}
-            <li className="menu-title">Account</li>
-            {authItems}
-            {isAuthenticated === false && (
-              <li>
-                <NavLink to="/register" className={navClass} onClick={blur}>
-                  Sign up
-                </NavLink>
-              </li>
-            )}
-          </ul>
-        </div>
-        <Link to="/" className="flex items-center gap-2 whitespace-nowrap text-base font-bold sm:text-lg">
-          <Leaf className="size-6 text-primary" />
-          Weight Loss App
-        </Link>
-      </div>
+    <header className="page sticky top-0 z-40 flex h-16 items-center gap-6 border-b border-rule bg-ground/85 backdrop-blur-md">
+      <Logo />
 
-      <nav className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal gap-1">
-          {NAV.map((n) => (
-            <li key={n.to}>
-              <NavLink to={n.to} className={navClass}>
-                {n.label}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
+      <nav className="ml-auto hidden items-center gap-1 md:flex" aria-label="Main">
+        {NAV.map((n) => (
+          <NavLink key={n.to} to={n.to} className={linkClass}>
+            {n.label}
+          </NavLink>
+        ))}
+        {isAuthenticated !== null && <span aria-hidden="true" className="mx-2 h-5 w-px bg-rule" />}
+        {isAuthenticated === true && (
+          <>
+            <NavLink to="/account" className={linkClass}>
+              Account
+            </NavLink>
+            <Button variant="ghost" size="sm" onClick={onLogout}>
+              Log out
+            </Button>
+          </>
+        )}
+        {isAuthenticated === false && (
+          <>
+            <NavLink to="/login" className={linkClass}>
+              Log in
+            </NavLink>
+            <Button asChild size="sm" className="ml-1">
+              <Link to="/register">Sign up</Link>
+            </Button>
+          </>
+        )}
       </nav>
 
-      <div className="navbar-end gap-1">
-        <ul className="menu menu-horizontal hidden gap-1 lg:flex">{authItems}</ul>
-        {isAuthenticated === false && (
-          <Link to="/register" className="btn btn-primary btn-sm hidden sm:inline-flex">
-            Sign up
-          </Link>
-        )}
-        <ThemeToggle />
-      </div>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger asChild>
+          <Button variant="ghost" size="icon" className="ml-auto md:hidden" aria-label="Open menu">
+            <Menu />
+          </Button>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content
+            align="end"
+            sideOffset={8}
+            className="z-50 w-60 rounded-2xl bg-panel p-1.5 shadow-pop ring-1 ring-rule data-[state=open]:animate-rise"
+          >
+            {NAV.map((n) => (
+              <DropdownMenu.Item key={n.to} asChild className={menuItem}>
+                <Link to={n.to}>{n.label}</Link>
+              </DropdownMenu.Item>
+            ))}
+            <DropdownMenu.Separator className="my-1.5 h-px bg-rule" />
+            {isAuthenticated ? (
+              <>
+                <DropdownMenu.Item asChild className={menuItem}>
+                  <Link to="/account">Account</Link>
+                </DropdownMenu.Item>
+                <DropdownMenu.Item className={menuItem} onSelect={onLogout}>
+                  Log out
+                </DropdownMenu.Item>
+              </>
+            ) : (
+              <>
+                <DropdownMenu.Item asChild className={menuItem}>
+                  <Link to="/login">Log in</Link>
+                </DropdownMenu.Item>
+                <DropdownMenu.Item asChild className={menuItem}>
+                  <Link to="/register">Sign up</Link>
+                </DropdownMenu.Item>
+              </>
+            )}
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
     </header>
   );
 }

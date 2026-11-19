@@ -15,10 +15,11 @@
     "start": "node server/index.js"
   },
   "dependencies": {
+    "@fontsource-variable/overpass": "^5.3.0",
     "@tailwindcss/vite": "^4.3.5",
     "@vitejs/plugin-react": "^6.3.0",
-    "daisyui": "^5.8.1",
     "lucide-react": "^1.74.0",
+    "radix-ui": "^1.8.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-markdown": "^10.1.0",

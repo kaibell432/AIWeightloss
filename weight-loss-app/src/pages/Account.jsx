@@ -1,27 +1,33 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { api } from '@/lib/api';
-import { toast } from '@/lib/toast';
 import PageHeader from '@/components/PageHeader';
 import SavedMealPlans from '@/components/SavedMealPlans';
+import { Button, Spinner } from '@/components/ui/button';
+import { Field, Input } from '@/components/ui/field';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { toast } from '@/components/ui/toast';
 
 export default function Account() {
   const [params, setParams] = useSearchParams();
   const tab = params.get('tab') === 'saved' ? 'saved' : 'profile';
-  const select = (t) => setParams(t === 'saved' ? { tab: 'saved' } : {}, { replace: true });
 
   return (
     <div className="page">
-      <PageHeader title="Your account" />
-      <div role="tablist" className="tabs tabs-box mb-6 w-fit">
-        <button role="tab" aria-selected={tab === 'profile'} className={`tab ${tab === 'profile' ? 'tab-active' : ''}`} onClick={() => select('profile')}>
-          Profile
-        </button>
-        <button role="tab" aria-selected={tab === 'saved'} className={`tab ${tab === 'saved' ? 'tab-active' : ''}`} onClick={() => select('saved')}>
-          Saved meal plans
-        </button>
-      </div>
-      {tab === 'profile' ? <Profile /> : <SavedMealPlans />}
+      <Tabs value={tab} onValueChange={(v) => setParams(v === 'saved' ? { tab: 'saved' } : {}, { replace: true })}>
+        <PageHeader title="Your account">
+          <TabsList>
+            <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="saved">Saved plans</TabsTrigger>
+          </TabsList>
+        </PageHeader>
+        <TabsContent value="profile" className="focus-visible:outline-none">
+          <Profile />
+        </TabsContent>
+        <TabsContent value="saved" className="focus-visible:outline-none">
+          <SavedMealPlans />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
@@ -56,45 +62,30 @@ function Profile() {
   }
 
   if (!user) {
-    return (
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="skeleton h-16" />
-        ))}
-      </div>
-    );
+    return <div className="h-48 animate-pulse rounded-panel bg-well" aria-label="Loading profile" />;
   }
 
   return (
-    <form onSubmit={handleSubmit} className="card card-border bg-base-100">
-      <div className="card-body">
-        <p className="text-sm text-base-content/70">All fields except username are optional.</p>
-        <div className="grid gap-x-4 md:grid-cols-2 xl:grid-cols-4">
-          <fieldset className="fieldset">
-            <label className="fieldset-legend" htmlFor="username">Username</label>
-            <input id="username" className="input w-full" value={user.username} disabled />
-          </fieldset>
-          <fieldset className="fieldset">
-            <label className="fieldset-legend" htmlFor="firstName">First name</label>
-            <input id="firstName" name="firstName" className="input w-full" value={user.firstName || ''} onChange={onInput} maxLength={50} autoComplete="given-name" />
-          </fieldset>
-          <fieldset className="fieldset">
-            <label className="fieldset-legend" htmlFor="lastName">Last name</label>
-            <input id="lastName" name="lastName" className="input w-full" value={user.lastName || ''} onChange={onInput} maxLength={50} autoComplete="family-name" />
-          </fieldset>
-          <fieldset className="fieldset">
-            <label className="fieldset-legend" htmlFor="email">Email</label>
-            <input id="email" name="email" type="email" className="input w-full" value={user.email} onChange={onInput} autoComplete="email" />
-            <p className="label">Used to email yourself saved meal plans.</p>
-          </fieldset>
-        </div>
-        <div className="card-actions mt-2">
-          <button type="submit" className="btn btn-primary" disabled={saving}>
-            {saving && <span className="loading loading-spinner loading-sm" />}
-            Save changes
-          </button>
-        </div>
+    <form onSubmit={handleSubmit} className="animate-rise rounded-panel bg-panel p-6 shadow-panel sm:p-8">
+      <p className="text-muted">Only your username is required. Everything else is optional.</p>
+      <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <Field label="Username" htmlFor="username">
+          <Input id="username" value={user.username} disabled />
+        </Field>
+        <Field label="First name" htmlFor="firstName">
+          <Input id="firstName" name="firstName" value={user.firstName || ''} onChange={onInput} maxLength={50} autoComplete="given-name" />
+        </Field>
+        <Field label="Last name" htmlFor="lastName">
+          <Input id="lastName" name="lastName" value={user.lastName || ''} onChange={onInput} maxLength={50} autoComplete="family-name" />
+        </Field>
+        <Field label="Email" htmlFor="email" hint="Used to email yourself saved plans.">
+          <Input id="email" name="email" type="email" value={user.email} onChange={onInput} autoComplete="email" />
+        </Field>
       </div>
+      <Button type="submit" disabled={saving} className="mt-7">
+        {saving && <Spinner />}
+        Save changes
+      </Button>
     </form>
   );
 }
