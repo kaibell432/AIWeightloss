@@ -2,7 +2,7 @@
 
 AI-powered weight management suggestions and meal plans.
 
-- **Frontend:** React 19, Vite, Tailwind CSS 4, [daisyUI 5](https://daisyui.com), [Lucide](https://lucide.dev) icons
+- **Frontend:** React 19, Vite, Tailwind CSS 4, [Radix UI](https://www.radix-ui.com) primitives, Overpass type, [Lucide](https://lucide.dev) icons. Visual system: see [DESIGN.md](DESIGN.md)
 - **Backend:** Express, MongoDB (Mongoose), sessions stored in MongoDB
 - **AI:** Google Gemini via `@google/genai`, with structured JSON output
 - **Hosting:** Render free tier + MongoDB Atlas free tier
@@ -51,11 +51,12 @@ rather than model-generated URLs, which are often invented.
 ## Project layout
 
 ```
-index.html, vite.config.js   Vite entry + config (daisyUI themes: src/index.css)
+index.html, vite.config.js   Vite entry + config (design tokens: src/index.css)
 scripts/vite.mjs             Vite launcher (Windows path fix)
 src/
   pages/                     Route components
-  components/                App components
+  components/                App components (route.jsx: the route-map signature pieces)
+  components/ui/             Radix-based kit: button, field, select, dialog, toast, tabs
   lib/                       API client, toasts, form options
 server/
   index.js                   Express app: sessions, API routes, serves build/

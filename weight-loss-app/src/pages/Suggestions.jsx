@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
-import { ArrowRight, Scale, Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { api } from '@/lib/api';
-import { toast } from '@/lib/toast';
 import {
   ACTIVITY_OPTIONS,
   DIETARY_OPTIONS,
@@ -13,8 +12,11 @@ import {
   SEX_OPTIONS,
 } from '@/lib/options';
 import PageHeader from '@/components/PageHeader';
-import SelectField from '@/components/SelectField';
-import GeneratingCard from '@/components/GeneratingCard';
+import { Station, TargetScale, TravelProgress } from '@/components/route';
+import { Button, Spinner } from '@/components/ui/button';
+import { Field, Input } from '@/components/ui/field';
+import { Select } from '@/components/ui/select';
+import { toast } from '@/components/ui/toast';
 
 const EMPTY = {
   age: '',
@@ -29,6 +31,14 @@ const EMPTY = {
   healthGoalsOther: '',
 };
 
+const REQUIRED_SELECTS = {
+  gender: 'sex',
+  heightFeet: 'height (feet)',
+  heightInches: 'height (inches)',
+  activityLevel: 'activity level',
+  healthGoals: 'goal',
+};
+
 export default function Suggestions({ result, setResult }) {
   const [form, setForm] = useState(EMPTY);
   const [loading, setLoading] = useState(false);
@@ -39,6 +49,11 @@ export default function Suggestions({ result, setResult }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    const missing = Object.entries(REQUIRED_SELECTS).filter(([k]) => !form[k]).map(([, label]) => label);
+    if (missing.length) {
+      toast.error(`Please choose your ${missing.join(', ')}.`);
+      return;
+    }
     setLoading(true);
     try {
       const data = await api('/getSuggestions', {
@@ -46,7 +61,9 @@ export default function Suggestions({ result, setResult }) {
         body: {
           ...form,
           dietaryRestrictions:
-            form.dietaryRestrictions === 'Other' ? form.dietaryRestrictionsOther : form.dietaryRestrictions,
+            form.dietaryRestrictions === 'Other'
+              ? form.dietaryRestrictionsOther
+              : form.dietaryRestrictions || 'No restrictions',
           healthGoals: form.healthGoals === 'Other' ? form.healthGoalsOther : form.healthGoals,
         },
       });
@@ -65,77 +82,84 @@ export default function Suggestions({ result, setResult }) {
     <div className="page">
       <PageHeader
         title="Weight suggestions"
-        description="Tell us a bit about yourself and get a personalized calorie target and plan."
+        description="Seven quick questions. You get a daily calorie range, a protein target, and advice that fits."
       />
 
-      <div className="grid gap-6 lg:grid-cols-12">
-        <form onSubmit={handleSubmit} className="card card-border h-fit bg-base-100 lg:col-span-5 xl:col-span-4">
-          <div className="card-body gap-0">
-            <div className="grid gap-x-4 sm:grid-cols-2">
-              <fieldset className="fieldset">
-                <label className="fieldset-legend" htmlFor="age">Age</label>
-                <input id="age" name="age" type="number" min="13" max="120" className="input w-full" value={form.age} onChange={onInput} required />
-              </fieldset>
-              <SelectField id="gender" label="Sex" value={form.gender} onChange={set('gender')} options={SEX_OPTIONS} />
-
-              <fieldset className="fieldset">
-                <label className="fieldset-legend" htmlFor="weight">Weight</label>
-                <label className="input w-full">
-                  <input id="weight" name="weight" type="number" min="50" max="1000" value={form.weight} onChange={onInput} required />
-                  <span className="label">lb</span>
-                </label>
-              </fieldset>
+      <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,26rem)_1fr] xl:grid-cols-[minmax(0,28rem)_1fr] xl:gap-12">
+        <form onSubmit={handleSubmit} className="rounded-panel bg-panel p-5 shadow-panel sm:p-6 lg:sticky lg:top-24">
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Age" htmlFor="age">
+              <Input id="age" name="age" type="number" min="13" max="120" inputMode="numeric" value={form.age} onChange={onInput} required />
+            </Field>
+            <Field label="Sex" htmlFor="gender">
+              <Select id="gender" value={form.gender} onValueChange={set('gender')} options={SEX_OPTIONS} />
+            </Field>
+            <Field label="Weight" htmlFor="weight">
+              <Input id="weight" name="weight" type="number" min="50" max="1000" inputMode="numeric" suffix="lb" value={form.weight} onChange={onInput} required />
+            </Field>
+            <Field label="Height" htmlFor="heightFeet">
               <div className="grid grid-cols-2 gap-2">
-                <SelectField id="heightFeet" label="Height" placeholder="ft" value={form.heightFeet} onChange={set('heightFeet')} options={FEET_OPTIONS} />
-                <SelectField id="heightInches" label={<span className="invisible">in</span>} placeholder="in" value={form.heightInches} onChange={set('heightInches')} options={INCH_OPTIONS} />
+                <Select id="heightFeet" value={form.heightFeet} onValueChange={set('heightFeet')} options={FEET_OPTIONS} placeholder="ft" />
+                <Select id="heightInches" value={form.heightInches} onValueChange={set('heightInches')} options={INCH_OPTIONS} placeholder="in" />
               </div>
-            </div>
-
-            <SelectField id="activityLevel" label="Activity level" value={form.activityLevel} onChange={set('activityLevel')} options={ACTIVITY_OPTIONS} />
-
-            <div className="grid gap-x-4 sm:grid-cols-2">
-              <div>
-                <SelectField id="dietaryRestrictions" label="Dietary restrictions" value={form.dietaryRestrictions} onChange={set('dietaryRestrictions')} options={DIETARY_OPTIONS} />
-                {form.dietaryRestrictions === 'Other' && (
-                  <input name="dietaryRestrictionsOther" className="input mt-1 w-full" placeholder="e.g. nut allergy" aria-label="Other dietary restrictions" value={form.dietaryRestrictionsOther} onChange={onInput} maxLength={120} required />
-                )}
-              </div>
-              <div>
-                <SelectField id="healthGoals" label="Goal" value={form.healthGoals} onChange={set('healthGoals')} options={GOAL_OPTIONS} />
-                {form.healthGoals === 'Other' && (
-                  <input name="healthGoalsOther" className="input mt-1 w-full" placeholder="Describe your goal" aria-label="Other goal" value={form.healthGoalsOther} onChange={onInput} maxLength={120} required />
-                )}
-              </div>
-            </div>
-
-            <button type="submit" className="btn btn-primary mt-6 w-full" disabled={loading}>
-              {loading ? <span className="loading loading-spinner loading-sm" /> : <Sparkles className="size-4" />}
-              {loading ? 'Generating…' : 'Get suggestions'}
-            </button>
+            </Field>
+            <Field label="Activity level" htmlFor="activityLevel" className="col-span-2">
+              <Select id="activityLevel" value={form.activityLevel} onValueChange={set('activityLevel')} options={ACTIVITY_OPTIONS} />
+            </Field>
+            <Field label="Goal" htmlFor="healthGoals" className="col-span-2 sm:col-span-1">
+              <Select id="healthGoals" value={form.healthGoals} onValueChange={set('healthGoals')} options={GOAL_OPTIONS} />
+              {form.healthGoals === 'Other' && (
+                <Input name="healthGoalsOther" aria-label="Describe your goal" placeholder="Describe your goal" value={form.healthGoalsOther} onChange={onInput} maxLength={120} required className="mt-2" />
+              )}
+            </Field>
+            <Field label="Dietary restrictions" htmlFor="dietaryRestrictions" className="col-span-2 sm:col-span-1">
+              <Select id="dietaryRestrictions" value={form.dietaryRestrictions} onValueChange={set('dietaryRestrictions')} options={DIETARY_OPTIONS} placeholder="No restrictions" />
+              {form.dietaryRestrictions === 'Other' && (
+                <Input name="dietaryRestrictionsOther" aria-label="Describe your dietary restrictions" placeholder="e.g. nut allergy" value={form.dietaryRestrictionsOther} onChange={onInput} maxLength={120} required className="mt-2" />
+              )}
+            </Field>
           </div>
+          <Button type="submit" size="lg" disabled={loading} className="mt-6 w-full">
+            {loading && <Spinner />}
+            {loading ? 'Working out your target…' : 'Get my suggestions'}
+          </Button>
         </form>
 
-        <div id="results" className="scroll-mt-20 lg:col-span-7 xl:col-span-8">
+        <div id="results" className="scroll-mt-24">
           {loading ? (
-            <GeneratingCard message="Crunching the numbers. This usually takes 5–15 seconds." />
+            <TravelProgress message="Working out your target. This usually takes 5 to 15 seconds." />
           ) : result ? (
             <SuggestionsResult
               result={result}
               onPlanMeals={() =>
                 navigate('/meal-plan-generator', {
-                  state: { dailyCals: `${result.calorieTarget.min}-${result.calorieTarget.max}` },
+                  state: { prefill: { dailyCals: `${result.calorieTarget.min}-${result.calorieTarget.max}` } },
                 })
               }
             />
           ) : (
-            <div className="hidden h-full min-h-80 flex-col items-center justify-center rounded-box border border-dashed border-base-300 p-10 text-center lg:flex">
-              <Scale className="size-10 text-base-content/30" />
-              <p className="mt-3 font-semibold">Your plan will appear here</p>
-              <p className="mt-1 text-sm text-base-content/60">Fill in the form and select Get suggestions.</p>
-            </div>
+            <EmptyRoute />
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function EmptyRoute() {
+  const stops = ['Your daily calorie range', 'Your protein target', 'Advice for food, activity and habits'];
+  return (
+    <div className="hidden rounded-panel border-2 border-dashed border-rule p-10 lg:block">
+      <p className="font-semibold">Your results will appear here</p>
+      <ol className="relative mt-6 space-y-5">
+        <span aria-hidden="true" className="absolute top-2 bottom-2 left-[9px] w-1 rounded-full bg-rule" />
+        {stops.map((s) => (
+          <li key={s} className="relative flex items-center gap-4 text-muted">
+            <span aria-hidden="true" className="size-5 shrink-0 rounded-full border-[4.5px] border-rule bg-ground" />
+            {s}
+          </li>
+        ))}
+      </ol>
     </div>
   );
 }
@@ -145,39 +169,41 @@ function SuggestionsResult({ result, onPlanMeals }) {
   const fmt = (n) => n.toLocaleString();
 
   return (
-    <div className="card card-border bg-base-100">
-      <div className="card-body gap-5">
+    <article className="animate-rise rounded-panel bg-panel p-6 shadow-panel sm:p-8">
+      <h2 className="text-2xl font-bold tracking-tight">Your plan</h2>
+      <p className="mt-2 max-w-[70ch] text-lg text-muted">{summary}</p>
+
+      <div className="mt-8 grid gap-8 md:grid-cols-[1fr_auto] md:items-end">
         <div>
-          <h2 className="card-title text-xl">Your personalized plan</h2>
-          <p className="mt-1 text-base-content/70">{summary}</p>
-        </div>
-
-        <div className="stats stats-vertical w-full border border-base-300 sm:stats-horizontal">
-          <div className="stat">
-            <div className="stat-title">Daily calories</div>
-            <div className="stat-value text-primary tabular-nums">
-              {fmt(calorieTarget.min)}–{fmt(calorieTarget.max)}
-            </div>
-            <div className="stat-desc">kcal per day</div>
-          </div>
-          <div className="stat">
-            <div className="stat-title">Daily protein</div>
-            <div className="stat-value tabular-nums">{proteinTargetGrams}g</div>
-            <div className="stat-desc">grams per day</div>
+          <p className="text-sm font-semibold text-muted">Daily calories</p>
+          <p className="tnum mt-1 text-3xl font-bold">
+            {fmt(calorieTarget.min)}–{fmt(calorieTarget.max)} <span className="text-lg font-semibold text-muted">kcal</span>
+          </p>
+          <div className="mt-4 max-w-xl">
+            <TargetScale min={calorieTarget.min} max={calorieTarget.max} />
           </div>
         </div>
-
-        <div className="markdown max-w-none">
-          <ReactMarkdown>{adviceMarkdown}</ReactMarkdown>
-        </div>
-
-        <div className="card-actions items-center justify-between border-t border-base-300 pt-4">
-          <span className="text-sm text-base-content/70">Ready to eat at this target?</span>
-          <button className="btn btn-primary" onClick={onPlanMeals}>
-            Build meal plans <ArrowRight className="size-4" />
-          </button>
+        <div className="flex items-center gap-3 md:pb-7">
+          <Station tone="route" />
+          <p>
+            <span className="tnum text-3xl font-bold">{proteinTargetGrams}g</span>{' '}
+            <span className="text-muted">protein a day</span>
+          </p>
         </div>
       </div>
-    </div>
+
+      <div className="mt-10 border-t border-rule pt-8">
+        <div className="advice">
+          <ReactMarkdown>{adviceMarkdown}</ReactMarkdown>
+        </div>
+      </div>
+
+      <div className="mt-10 flex flex-col gap-4 border-t border-rule pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <p className="font-semibold">Next stop: meals at {fmt(calorieTarget.min)}–{fmt(calorieTarget.max)} kcal.</p>
+        <Button variant="route" onClick={onPlanMeals}>
+          Plan my meals <ArrowRight />
+        </Button>
+      </div>
+    </article>
   );
 }

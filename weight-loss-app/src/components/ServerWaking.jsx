@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
+import { Spinner } from '@/components/ui/button';
 
 // Render's free tier sleeps after ~15 min idle; the first request can take ~1 min.
-// Show a friendly notice if the initial auth check is slow.
 export default function ServerWaking({ ready }) {
   const [slow, setSlow] = useState(false);
 
@@ -14,9 +14,9 @@ export default function ServerWaking({ ready }) {
   if (ready || !slow) return null;
 
   return (
-    <div role="status" className="alert alert-info alert-soft rounded-none px-4 sm:px-6 lg:px-10">
-      <span className="loading loading-spinner loading-sm" />
-      <span>Waking up the server. This can take up to a minute after it has been idle.</span>
+    <div role="status" className="page flex items-center gap-3 bg-well py-2.5 text-sm text-ink">
+      <Spinner />
+      Waking up the server. This can take up to a minute after it has been idle.
     </div>
   );
 }
